@@ -19,6 +19,22 @@
 static void *xfb = NULL;
 static GXRModeObj *rmode = NULL;
 
+void WaitForPad(wpadButtons, padButtons) {
+	while(1) {
+		WPAD_ScanPads();
+		PAD_ScanPads();
+		for(int i = 0; i < 4; i++) {
+				wpadButtons += WPAD_ButtonsDown(i);
+				padButtons += PAD_ButtonsDown(i);
+		}
+		if (wpadButtons || padButtons) break;
+		VIDEO_WaitVSync();
+	}
+	wpadButtons = 0;
+	padButtons = 0;
+	return;
+}
+
 int main(int argc, char **argv) {
 
 	VIDEO_Init();
@@ -33,7 +49,6 @@ int main(int argc, char **argv) {
 	VIDEO_Flush();
 	VIDEO_WaitVSync();
 	if(rmode->viTVMode&VI_NON_INTERLACE) VIDEO_WaitVSync();
-	int i = 0;
 	
 	u32 wpadButtons = 0;
 	u32 padButtons = 0;
@@ -46,34 +61,12 @@ int main(int argc, char **argv) {
 		ThrowError(errorStrings[ErrStr_NeedPerms]);
 	}
 	printf("\nPress any controller button to clear the boot2 version.");
-	while(1) {
+	WaitForPad(wpadButtons, padButtons);
+	clearVersion();
 
-		WPAD_ScanPads();
-		PAD_ScanPads();
-		for(i = 0; i < 4; i++) {
-			wpadButtons += WPAD_ButtonsDown(i);
-			padButtons += PAD_ButtonsDown(i);
-		}
-		if (wpadButtons || padButtons) {
-			clearVersion();
-			break;
-		}
-		VIDEO_WaitVSync();
-	}
 	printf("\nSuccess!\nPress any controller button to install SDboot.\n");
-	wpadButtons = 0;
-	padButtons = 0;
-	while(1) {
+	WaitForPad(wpadButtons, padButtons);
 
-		WPAD_ScanPads();
-		PAD_ScanPads();
-		for(i = 0; i < 4; i++) {
-			wpadButtons += WPAD_ButtonsDown(i);
-			padButtons += PAD_ButtonsDown(i);
-		}
-		if (wpadButtons || padButtons) break;
-		VIDEO_WaitVSync();
-	}
 	s32 ret = installRAWboot2();
 	
 	switch(ret){
@@ -95,7 +88,7 @@ out:
 
 		WPAD_ScanPads();
 		PAD_ScanPads();
-		for(i = 0; i < 4; i++) {
+		for(int i = 0; i < 4; i++) {
 			wpadButtons += WPAD_ButtonsDown(i);
 			padButtons += PAD_ButtonsDown(i);
 		}
