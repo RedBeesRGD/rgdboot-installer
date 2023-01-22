@@ -1,4 +1,4 @@
-/* RGD SDBoot Installer */
+/* RGDBoot */
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -12,7 +12,7 @@
 #include "boot2.h"
 
 #define RGDSDB_VER_MAJOR	0
-#define RGDSDB_VER_MINOR	2
+#define RGDSDB_VER_MINOR	3
 
 #define AHBPROT_DISABLED (*(vu32*)0xcd800064 == 0xFFFFFFFF)
 
@@ -39,7 +39,7 @@ int main(int argc, char **argv) {
 	u32 padButtons = 0;
 	
 	printf("\x1b[2;0H");
-	printf("RGD SDBoot Installer v%u.%u ECC - by \x1b[32mroot1024\x1b[37m, \x1b[31mRedBees\x1b[37m, \x1b[31mDeadlyFoez\x1b[37m, \x1b[31mLarsenv\x1b[37m \n raregamingdump.ca", RGDSDB_VER_MAJOR, RGDSDB_VER_MINOR);
+	printf("RGD SDBoot Installer v%u.%u - by \x1b[32mroot1024\x1b[37m, \x1b[31mRedBees\x1b[37m, \x1b[31mDeadlyFoez\x1b[37m, \x1b[31mLarsenv\x1b[37m \n raregamingdump.ca", RGDSDB_VER_MAJOR, RGDSDB_VER_MINOR);
 	fatInitDefault();
 
 	if(!AHBPROT_DISABLED) { 

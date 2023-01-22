@@ -1,5 +1,5 @@
 // Uses the same method as the DOP-Mii boot2 installation routine
-
+//ECC
 #include "boot2.h"
 
 #define ALIGN(a,b) ((((a)+(b)-1)/(b))*(b))
@@ -10,6 +10,52 @@
 #define CACERTSIZE   0x400
 #define CPCERTSIZE   0x300
 #define XSCERTSIZE   0x300
+
+boot2 *ReadBoot2NonECC(const char *filename){
+	FILE *fp = fopen(filename, "rb");
+	if(!checkFile(fp, filename))
+		return NULL;
+
+	boot2 *b2 = (boot2 *)malloc(sizeof(boot2));
+		
+	fread(b2, 1, 0x14, fp);             // Get headerLen, dataOffset, certsLen etc
+	fseek(fp, b2->headerLen, SEEK_SET); // Skip to 0x20
+	
+	b2->certs   = (certificates *)malloc(sizeof(certificates));
+	b2->tik     = (signed_blob *)alloc(b2->tikLen);
+	b2->TMD     = (signed_blob *)alloc(b2->TMDLen);
+	
+	b2->certs->ca_cert = (signed_blob *)alloc(CACERTSIZE);
+	b2->certs->cp_cert = (signed_blob *)alloc(CPCERTSIZE);
+	b2->certs->xs_cert = (signed_blob *)alloc(XSCERTSIZE);
+	
+	fread(b2->certs->ca_cert, 1, CACERTSIZE, fp); // Using hardcoded sizes for CA, CP and XS
+	fread(b2->certs->cp_cert, 1, CPCERTSIZE, fp);
+	fread(b2->certs->xs_cert, 1, XSCERTSIZE, fp);
+	fread(b2->tik, 1, b2->tikLen,   fp);
+	fread(b2->TMD, 1, b2->TMDLen,   fp);
+	
+	b2->contentSize = ALIGN(b2->TMD[0x7C], 16); // Align to 16
+	// Address 0x7C (0x1F0, unaligned) of TMD contains content size
+
+	b2->certs->tik_cert = (signed_blob *)alloc(CACERTSIZE + XSCERTSIZE);
+	memcpy(b2->certs->tik_cert, b2->certs->xs_cert, XSCERTSIZE);
+	memcpy(((u8*)(b2->certs->tik_cert)) + XSCERTSIZE, b2->certs->ca_cert, CACERTSIZE);
+	// Ticket Cert = XS + CA (concatenated)
+	
+	b2->certs->TMD_cert = (signed_blob *)alloc(CACERTSIZE + CPCERTSIZE);
+	memcpy(b2->certs->TMD_cert, b2->certs->cp_cert, CPCERTSIZE);
+	memcpy(((u8*)(b2->certs->TMD_cert)) + CPCERTSIZE, b2->certs->ca_cert, CACERTSIZE);
+	// TMD Cert = CP + CA (concatenated)
+
+	b2->content = (u8 *)alloc(b2->contentSize);
+	fseek(fp, b2->dataOffset, SEEK_SET);
+	fread(b2->content, 1, b2->contentSize, fp);
+	
+	fclose(fp);
+	
+	return b2;
+}
 
 WAD *readWAD(const char *filename){
 	FILE *fp = fopen(filename, "rb");
@@ -59,8 +105,7 @@ boot2 *readboot2(const char *filename){
 		return NULL;
 	u32 filelen = filesize(fp);
 	if(filelen != RAWBOOT2SIZE && filelen != 2*RAWBOOT2SIZE){
-		printf("Error: invalid file size\n");
-		return NULL;
+		return ReadBoot2NonECC(filename);  
 	}
 	
 	u8 pageCount = filelen / RAWBOOT2SIZE * 0x40;
