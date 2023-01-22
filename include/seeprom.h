@@ -1,0 +1,3 @@
+/* RGDSDB */
+
+void clearVersion();
