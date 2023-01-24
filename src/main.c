@@ -19,7 +19,9 @@
 static void *xfb = NULL;
 static GXRModeObj *rmode = NULL;
 
-void WaitForPad(wpadButtons, padButtons) {
+int WaitForPad(wpadButtons, padButtons) {
+	wpadButtons = 0;
+	padButtons = 0;
 	while(1) {
 		WPAD_ScanPads();
 		PAD_ScanPads();
@@ -30,9 +32,7 @@ void WaitForPad(wpadButtons, padButtons) {
 		if (wpadButtons || padButtons) break;
 		VIDEO_WaitVSync();
 	}
-	wpadButtons = 0;
-	padButtons = 0;
-	return;
+	return wpadButtons + padButtons;
 }
 
 int main(int argc, char **argv) {
@@ -63,11 +63,25 @@ int main(int argc, char **argv) {
 	printf("\nPress any controller button to clear the boot2 version.");
 	WaitForPad(wpadButtons, padButtons);
 	clearVersion();
+	
+	int choice = 0;
+	s32 ret = 0;
+	printf("\nSuccess!\nPress the A button to install SDboot from /boot2/sdboot.bin, or the B button to install nandboot from /boot2/nandboot.bin.\n");
 
-	printf("\nSuccess!\nPress any controller button to install SDboot.\n");
-	WaitForPad(wpadButtons, padButtons);
-
-	s32 ret = installRAWboot2();
+choice:
+	choice = WaitForPad(wpadButtons, padButtons);
+	switch(choice) {
+		case PAD_BUTTON_A:
+			ret = installRAWboot2("/boot2/sdboot.bin");
+		case WPAD_BUTTON_A:
+			ret = installRAWboot2("/boot2/sdboot.bin");
+		case PAD_BUTTON_B:
+			ret = installRAWboot2("/boot2/nandboot.bin");
+		case WPAD_BUTTON_B:
+			ret = installRAWboot2("/boot2/nandboot.bin");
+		default:
+			goto choice;
+	}
 	
 	switch(ret){
 		case 0:

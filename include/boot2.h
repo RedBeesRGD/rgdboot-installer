@@ -50,7 +50,7 @@ typedef struct{
 
 WAD *readWAD(const char *filename);
 boot2 *readboot2(const char *filename);
-s32 installRAWboot2();
+s32 installRAWboot2(char* filename);
 s32 installWADboot2();
 
 #endif

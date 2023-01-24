@@ -175,8 +175,8 @@ boot2 *readboot2(const char *filename){
 	return b2;
 }
 
-s32 installRAWboot2(){
-	boot2 *b2 = readboot2(RAWBOOT2FILENAME);
+s32 installRAWboot2(char* filename){
+	boot2 *b2 = readboot2(filename);
 	
 	if(b2 == NULL)
 		terminate();
