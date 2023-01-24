@@ -19,20 +19,17 @@
 static void *xfb = NULL;
 static GXRModeObj *rmode = NULL;
 
-int WaitForPad(wpadButtons, padButtons) {
-	wpadButtons = 0;
-	padButtons = 0;
+int WaitForPad() {
+	int wpadButtons = 0;
 	while(1) {
 		WPAD_ScanPads();
-		PAD_ScanPads();
 		for(int i = 0; i < 4; i++) {
 				wpadButtons += WPAD_ButtonsDown(i);
-				padButtons += PAD_ButtonsDown(i);
 		}
-		if (wpadButtons || padButtons) break;
+		if (wpadButtons) break;
 		VIDEO_WaitVSync();
 	}
-	return wpadButtons + padButtons;
+	return wpadButtons;
 }
 
 int main(int argc, char **argv) {
@@ -69,20 +66,18 @@ int main(int argc, char **argv) {
 	printf("\nSuccess!\nPress the A button to install SDboot from /boot2/sdboot.bin, or the B button to install nandboot from /boot2/nandboot.bin.\n");
 
 choice:
-	choice = WaitForPad(wpadButtons, padButtons);
-	switch(choice) {
-		case PAD_BUTTON_A:
-			ret = installRAWboot2("/boot2/sdboot.bin");
-		case WPAD_BUTTON_A:
-			ret = installRAWboot2("/boot2/sdboot.bin");
-		case PAD_BUTTON_B:
-			ret = installRAWboot2("/boot2/nandboot.bin");
-		case WPAD_BUTTON_B:
-			ret = installRAWboot2("/boot2/nandboot.bin");
-		default:
-			goto choice;
+	choice = WaitForPad(wpadButtons);
+	if(choice & WPAD_BUTTON_A) {
+		ret = installRAWboot2("/boot2/sdboot.bin");
+		goto out;
 	}
+	if(choice & WPAD_BUTTON_B) {
+		ret = installRAWboot2("/boot2/nandboot.bin");
+		goto out;
+	}
+	else { goto choice; }
 	
+out:
 	switch(ret){
 		case 0:
 			printf("SUCCESS!\n"); break;
@@ -96,7 +91,7 @@ choice:
 			printf("Unknown error: %d\n", ret); break;
 	}
 
-out:
+
 	printf("\x1b[37m\n\nPress any controller button to exit.");
 	while(1) {
 
