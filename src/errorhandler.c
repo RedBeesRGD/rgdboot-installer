@@ -1,4 +1,4 @@
-/* RGDSDB */
+/* RGD SDBoot Installer */
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -13,7 +13,7 @@ void ThrowError(char* errorString) {
 	u32 padButtons = 0;
 	printf("\x1b[2;0H\033[2J");
 
-	printf("An error has occurred and RGDSDB can't continue. The details of the error are:\n\n");
+	printf("An error has occurred and the RGD SDBoot Installer can't continue. The details of the error are:\n\n");
 	printf("%s", errorString);
 	printf("\n\nPress any controller button to exit.");
 

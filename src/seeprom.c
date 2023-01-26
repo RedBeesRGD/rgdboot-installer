@@ -1,4 +1,4 @@
-/* RGDSDB */
+/* RGD SDBoot Installer */
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -28,44 +28,31 @@ enum {
 		GP_EEP_MOSI = 0x001000,
 		GP_EEP_MISO = 0x002000
 };
-#define eeprom_delay() usleep(5)
+#define SEEPROMDelay() usleep(5)
 
-static void seeprom_send_bits(int b, int bits) {
+static void SEEPROMSendBits(int b, int bits) {
 		while (bits--) {
-				if (b & (1 << bits))
+				if (b & (1 << bits)) {
 						mask32(HW_GPIO1OUT, 0, GP_EEP_MOSI);
-				else
+				}
+				else {
 						mask32(HW_GPIO1OUT, GP_EEP_MOSI, 0);
-				eeprom_delay();
+				}
+				SEEPROMDelay();
 				mask32(HW_GPIO1OUT, 0, GP_EEP_CLK);
-				eeprom_delay();
+				SEEPROMDelay();
 				mask32(HW_GPIO1OUT, GP_EEP_CLK, 0);
-				eeprom_delay();
+				SEEPROMDelay();
 		}
 }
 
-static int seeprom_recv_bits(int bits) {
-		int res = 0;
-		while (bits--) {
-				res <<= 1;
-				mask32(HW_GPIO1OUT, 0, GP_EEP_CLK);
-				eeprom_delay();
-				mask32(HW_GPIO1OUT, GP_EEP_CLK, 0);
-				eeprom_delay();
-				res |= !!(read32(HW_GPIO1IN) & GP_EEP_MISO);
-		}
-		return res;
-}
-
-
-int seeprom_write(const void *src, unsigned int offset, unsigned int size) {
+int SEEPROMWrite(const void *src, unsigned int offset, unsigned int size) {
 		unsigned int i;
 		const u8* ptr = (const u8*)src;
 		u16 send;
 		u32 level;
 
-		if (offset&1 || size&1)
-				return -1;
+		if (offset&1 || size&1) return -1;
 
 		offset>>=1;
 		size>>=1;
@@ -75,13 +62,13 @@ int seeprom_write(const void *src, unsigned int offset, unsigned int size) {
 
 		mask32(HW_GPIO1OUT, GP_EEP_CLK, 0);
 		mask32(HW_GPIO1OUT, GP_EEP_CS, 0);
-		eeprom_delay();
+		SEEPROMDelay();
 
 		// EWEN - Enable programming commands
 		mask32(HW_GPIO1OUT, 0, GP_EEP_CS);
-		seeprom_send_bits(0x4FF, 11);
+		SEEPROMSendBits(0x4FF, 11);
 		mask32(HW_GPIO1OUT, GP_EEP_CS, 0);
-		eeprom_delay();
+		SEEPROMDelay();
 
 		for (i = 0; i < size; i++) {
 				send = (ptr[0]<<8) | ptr[1];
@@ -89,36 +76,36 @@ int seeprom_write(const void *src, unsigned int offset, unsigned int size) {
 				// start command cycle
 				mask32(HW_GPIO1OUT, 0, GP_EEP_CS);
 				// send command + address
-				 seeprom_send_bits((0x500 | (offset + i)), 11);
+				 SEEPROMSendBits((0x500 | (offset + i)), 11);
 				 // send data
-				seeprom_send_bits(send, 16);
+				SEEPROMSendBits(send, 16);
 				// end of command cycle
 				mask32(HW_GPIO1OUT, GP_EEP_CS, 0);
-				eeprom_delay();
+				SEEPROMDelay();
 
 				// wait for ready (write cycle is self-timed so no clocking needed)
 				mask32(HW_GPIO1OUT, 0, GP_EEP_CS);
 				do {
-					eeprom_delay();
+					SEEPROMDelay();
 				} while (!(read32(HW_GPIO1IN) & GP_EEP_MISO));
 
 				mask32(HW_GPIO1OUT, GP_EEP_CS, 0);
-				eeprom_delay();
+				SEEPROMDelay();
 		}
 
 		// EWDS - Disable programming commands
 		mask32(HW_GPIO1OUT, 0, GP_EEP_CS);
-		seeprom_send_bits(0x400, 11);
+		SEEPROMSendBits(0x400, 11);
 		mask32(HW_GPIO1OUT, GP_EEP_CS, 0);
-		eeprom_delay();
+		SEEPROMDelay();
 
 		_CPU_ISR_Restore(level);
 
 		return size;
 }
 
-void clearVersion()
+void ClearVersion()
 {
 		u8 clear[12] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
-		seeprom_write(clear, 0x48, 12);
+		SEEPROMWrite(clear, 0x48, 12);
 }

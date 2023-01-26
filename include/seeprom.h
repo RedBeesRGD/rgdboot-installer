@@ -1,3 +1,8 @@
-/* RGDSDB */
+/* RGD SDBoot Installer */
 
-void clearVersion();
+#ifndef SEEPROM_H_
+#define SEEPROM_H_
+
+void ClearVersion();
+
+#endif

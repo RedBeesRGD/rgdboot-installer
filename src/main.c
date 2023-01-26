@@ -1,4 +1,4 @@
-/* RGDBoot */
+/* RGD SDBoot Installer */
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -14,12 +14,15 @@
 #define RGDSDB_VER_MAJOR	0
 #define RGDSDB_VER_MINOR	3
 
+#define SDBOOT_PATH "/boot2/sdboot.bin"
+#define NANDBOOT_PATH "/boot2/nandboot.bin"
+
 #define AHBPROT_DISABLED (*(vu32*)0xcd800064 == 0xFFFFFFFF)
 
 static void *xfb = NULL;
 static GXRModeObj *rmode = NULL;
 
-int WaitForPad() {
+u32 WaitForPad() {
 	int wpadButtons = 0;
 	while(1) {
 		WPAD_ScanPads();
@@ -39,7 +42,8 @@ int main(int argc, char **argv) {
 	PAD_Init();
 	rmode = VIDEO_GetPreferredMode(NULL);
 	xfb = MEM_K0_TO_K1(SYS_AllocateFramebuffer(rmode));
-	console_init(xfb,20,20,rmode->fbWidth,rmode->xfbHeight,rmode->fbWidth*VI_DISPLAY_PIX_SZ); //	console_init(xfb, 396, 124, 305, 212, 305*VI_DISPLAY_PIX_SZ);
+	console_init(xfb,20,20,rmode->fbWidth,rmode->xfbHeight,rmode->fbWidth*VI_DISPLAY_PIX_SZ);
+
 	VIDEO_Configure(rmode);
 	VIDEO_SetNextFramebuffer(xfb);
 	VIDEO_SetBlack(FALSE);
@@ -47,32 +51,29 @@ int main(int argc, char **argv) {
 	VIDEO_WaitVSync();
 	if(rmode->viTVMode&VI_NON_INTERLACE) VIDEO_WaitVSync();
 	
-	u32 wpadButtons = 0;
-	u32 padButtons = 0;
-	
 	printf("\x1b[2;0H");
-	printf("RGD SDBoot Installer v%u.%u - by \x1b[32mroot1024\x1b[37m, \x1b[31mRedBees\x1b[37m, \x1b[31mDeadlyFoez\x1b[37m, \x1b[31mLarsenv\x1b[37m \n raregamingdump.ca", RGDSDB_VER_MAJOR, RGDSDB_VER_MINOR);
+	printf("RGD SDBoot Installer v%u.%u - by \x1b[32mroot1024\x1b[37m, \x1b[31mRedBees\x1b[37m, \x1b[31mDeadlyFoez\x1b[37m\nraregamingdump.ca", RGDSDB_VER_MAJOR, RGDSDB_VER_MINOR);
 	fatInitDefault();
 
 	if(!AHBPROT_DISABLED) { 
 		ThrowError(errorStrings[ErrStr_NeedPerms]);
 	}
-	printf("\nPress any controller button to clear the boot2 version.");
-	WaitForPad(wpadButtons, padButtons);
-	clearVersion();
+	printf("\n\nPress any controller button to clear the boot2 version.");
+	WaitForPad();
+	ClearVersion();
 	
-	int choice = 0;
+	u32 choice = 0;
 	s32 ret = 0;
 	printf("\nSuccess!\nPress the A button to install SDboot from /boot2/sdboot.bin, or the B button to install nandboot from /boot2/nandboot.bin.\n");
 
 choice:
-	choice = WaitForPad(wpadButtons);
+	choice = WaitForPad();
 	if(choice & WPAD_BUTTON_A) {
-		ret = installRAWboot2("/boot2/sdboot.bin");
+		ret = InstallRawBoot2(SDBOOT_PATH);
 		goto out;
 	}
 	if(choice & WPAD_BUTTON_B) {
-		ret = installRAWboot2("/boot2/nandboot.bin");
+		ret = InstallRawBoot2(NANDBOOT_PATH);
 		goto out;
 	}
 	else { goto choice; }
@@ -91,8 +92,10 @@ out:
 			printf("Unknown error: %d\n", ret); break;
 	}
 
-
 	printf("\x1b[37m\n\nPress any controller button to exit.");
+	u32 wpadButtons = 0;
+	u32 padButtons = 0;
+	
 	while(1) {
 
 		WPAD_ScanPads();

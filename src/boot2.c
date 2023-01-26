@@ -1,5 +1,6 @@
+/* RGD SDBoot Installer */
+
 // Uses the same method as the DOP-Mii boot2 installation routine
-//ECC
 #include "boot2.h"
 
 #define ALIGN(a,b) ((((a)+(b)-1)/(b))*(b))
@@ -11,10 +12,9 @@
 #define CPCERTSIZE   0x300
 #define XSCERTSIZE   0x300
 
-boot2 *ReadBoot2NonECC(const char *filename){
+boot2* ReadBoot2NonECC(const char* filename){
 	FILE *fp = fopen(filename, "rb");
-	if(!checkFile(fp, filename))
-		return NULL;
+	if(!CheckFile(fp, filename)) return NULL;
 
 	boot2 *b2 = (boot2 *)malloc(sizeof(boot2));
 		
@@ -57,10 +57,9 @@ boot2 *ReadBoot2NonECC(const char *filename){
 	return b2;
 }
 
-WAD *readWAD(const char *filename){
+WAD* ReadWAD(const char* filename){
 	FILE *fp = fopen(filename, "rb");
-	if(!checkFile(fp, filename))
-		return NULL;
+	if(!CheckFile(fp, filename)) return NULL;
 	
 	WAD *wad = (WAD *)malloc(sizeof(WAD));
 	
@@ -99,10 +98,10 @@ WAD *readWAD(const char *filename){
 	return wad;
 }
 
-boot2 *readboot2(const char *filename){
+boot2 *ReadBoot2(const char *filename){
 	FILE *fp = fopen(filename, "rb");
-	if(!checkFile(fp, filename))
-		return NULL;
+	if(!CheckFile(fp, filename)) return NULL;
+	
 	u32 filelen = filesize(fp);
 	if(filelen != RAWBOOT2SIZE && filelen != 2*RAWBOOT2SIZE){
 		return ReadBoot2NonECC(filename);  
@@ -128,9 +127,9 @@ boot2 *readboot2(const char *filename){
 	fclose(out);
 	
 	fp = fopen("noecc.bin", "rb");
-	if(!checkFile(fp, "noecc.bin")){ // Read file without ECC
+	if(!CheckFile(fp, "noecc.bin")){ // Read file without ECC
 		printf("Something went wrong... Aborting\n");
-		terminate();
+		Terminate();
 	}
 		
 	fread(b2, 1, 0x14, fp);             // Get headerLen, dataOffset, certsLen etc
@@ -175,11 +174,10 @@ boot2 *readboot2(const char *filename){
 	return b2;
 }
 
-s32 installRAWboot2(char* filename){
-	boot2 *b2 = readboot2(filename);
+s32 InstallRawBoot2(char* filename){
+	boot2 *b2 = ReadBoot2(filename);
 	
-	if(b2 == NULL)
-		terminate();
+	if(b2 == NULL) Terminate();
 	
 	s32 ret = ES_ImportBoot(b2->tik,
 	                        b2->tikLen,
@@ -196,11 +194,10 @@ s32 installRAWboot2(char* filename){
 	return ret;
 }
 
-s32 installWADboot2(){
-	WAD *wad = readWAD(WADBOOT2FILENAME);
+s32 InstallWADBoot2(){
+	WAD *wad = ReadWAD(WADBOOT2FILENAME);
 	
-	if(wad == NULL)
-		terminate();
+	if(wad == NULL) Terminate();
 	
 	s32 ret = ES_ImportBoot(wad->tik,
 	                        wad->tikLen,

@@ -1,3 +1,5 @@
+/* RGD SDBoot Installer */
+
 #include "tools.h"
 
 #ifndef BOOT2_H_
@@ -6,7 +8,7 @@
 #define RAWBOOT2FILENAME "/boot2/boot2.bin"
 #define WADBOOT2FILENAME "/boot2/boot2.wad"
 
-typedef struct{
+typedef struct {
 	signed_blob *ca_cert;
 	signed_blob *cp_cert;
 	signed_blob *xs_cert;
@@ -16,7 +18,7 @@ typedef struct{
 	
 } certificates;
 
-typedef struct{
+typedef struct {
 	u32 headerLen;
 	u32 dataOffset;
 	u32 certsLen;
@@ -30,7 +32,7 @@ typedef struct{
 	u32 contentSize;
 } boot2;
 
-typedef struct{
+typedef struct {
 	u32 headerLen;
 	u16 wadType;
 	u16 wadVersion;
@@ -48,9 +50,9 @@ typedef struct{
 	u8 *content;
 } WAD;
 
-WAD *readWAD(const char *filename);
-boot2 *readboot2(const char *filename);
-s32 installRAWboot2(char* filename);
-s32 installWADboot2();
+WAD *ReadWAD(const char *filename);
+boot2 *ReadBoot2(const char *filename);
+s32 InstallRawBoot2(char* filename);
+s32 InstallWADBoot2();
 
 #endif

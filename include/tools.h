@@ -10,11 +10,9 @@
 #ifndef TOOLS_H_
 #define TOOLS_H_
 
-u32 getInput();
-void terminate();
-void setup();
+void Terminate();
 void *alloc(u32 size);
 u32 filesize(FILE* fp);
-int checkFile(FILE* fp, const char *filename);
+int CheckFile(FILE* fp, const char *filename);
 
 #endif
