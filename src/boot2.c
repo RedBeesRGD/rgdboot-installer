@@ -129,7 +129,7 @@ boot2 *ReadBoot2(const char *filename){
 	fp = fopen("noecc.bin", "rb");
 	if(!CheckFile(fp, "noecc.bin")){ // Read file without ECC
 		printf("Something went wrong... Aborting\n");
-		Terminate();
+		WaitExit();
 	}
 		
 	fread(b2, 1, 0x14, fp);             // Get headerLen, dataOffset, certsLen etc
@@ -177,7 +177,7 @@ boot2 *ReadBoot2(const char *filename){
 s32 InstallRawBoot2(char* filename){
 	boot2 *b2 = ReadBoot2(filename);
 	
-	if(b2 == NULL) Terminate();
+	if(b2 == NULL) WaitExit();
 	
 	s32 ret = ES_ImportBoot(b2->tik,
 	                        b2->tikLen,
@@ -194,10 +194,10 @@ s32 InstallRawBoot2(char* filename){
 	return ret;
 }
 
-s32 InstallWADBoot2(){
+s32 InstallWADBoot2( void ){
 	WAD *wad = ReadWAD(WADBOOT2FILENAME);
 	
-	if(wad == NULL) Terminate();
+	if(wad == NULL) WaitExit();
 	
 	s32 ret = ES_ImportBoot(wad->tik,
 	                        wad->tikLen,

@@ -10,6 +10,7 @@
 #include "errorcodes.h"
 #include "seeprom.h"
 #include "boot2.h"
+#include "tools.h"
 
 #define RGDSDB_VER_MAJOR	0
 #define RGDSDB_VER_MINOR	3
@@ -21,36 +22,6 @@
 
 static void *xfb = NULL;
 static GXRModeObj *rmode = NULL;
-
-u32 WaitForPad() {
-	int wpadButtons = 0;
-	while(1) {
-		WPAD_ScanPads();
-		for(int i = 0; i < 4; i++) {
-				wpadButtons += WPAD_ButtonsDown(i);
-		}
-		if (wpadButtons) break;
-		VIDEO_WaitVSync();
-	}
-	return wpadButtons;
-}
-
-u8 IsWiiU( void ) {
-	if(*(vu16*)0xcd8005a0 == 0xCAFE) return 1;
-	return 0;
-}
-
-u8 IsDolphin( void ) {
-	#ifdef DOLPHIN_CHECK
-	int fd = IOS_Open("/dev/dolphin", 1);
-	if(fd >= 0) {
-		IOS_Close(fd);
-		return 1;
-	}
-	IOS_Close(fd);
-	#endif
-	return 0;
-}
 
 int main(int argc, char **argv) {
 
@@ -88,50 +59,32 @@ int main(int argc, char **argv) {
 	
 	u32 choice = 0;
 	s32 ret = 0;
-	printf("\nSuccess!\nPress the A button to install SDboot from /boot2/sdboot.bin, or the B button to install nandboot from /boot2/nandboot.bin.\n");
+	printf("\The boot2 version was cleared successfully!\nPress the A button to install SDboot from /boot2/sdboot.bin, or the B button to install nandboot from /boot2/nandboot.bin.\n");
 
 choice:
 	choice = WaitForPad();
 	if(choice & WPAD_BUTTON_A) {
 		ret = InstallRawBoot2(SDBOOT_PATH);
 		goto out;
-	}
-	if(choice & WPAD_BUTTON_B) {
+	} else if(choice & WPAD_BUTTON_B) {
 		ret = InstallRawBoot2(NANDBOOT_PATH);
 		goto out;
-	}
-	else { goto choice; }
+	} else { goto choice; }
 	
 out:
 	switch(ret){
 		case 0:
-			printf("SUCCESS!\n"); break;
+			printf("%s was installed successfully!\n", (choice & WPAD_BUTTON_A) ? "SDBoot" : "NANDBoot"); break;
 		case -4:
-			printf("Error: cannot install boot2 using an emulator\n"); break;
+			ThrowError(errorStrings[ErrStr_InDolphin]); break;
 		case -1022:
-			printf("Error: content SHA1 does not match the TMD hash\n"); break;
-		case -1031:
+			ThrowError(errorStrings[ErrStr_BadFile]); break;
+		case -1031: // TODO: Find out why this triggers sometimes even after writing SEEPROM
 			printf("Error: cannot downgrade boot2\n"); break;
 		default:
-			printf("Unknown error: %d\n", ret); break;
+			ThrowErrorEx(errorStrings[ErrStr_Generic], ret); break;
 	}
 
-	printf("\x1b[37m\n\nPress any controller button to exit.");
-	u32 wpadButtons = 0;
-	u32 padButtons = 0;
-	
-	while(1) {
-
-		WPAD_ScanPads();
-		PAD_ScanPads();
-		for(int i = 0; i < 4; i++) {
-			wpadButtons += WPAD_ButtonsDown(i);
-			padButtons += PAD_ButtonsDown(i);
-		}
-		if (wpadButtons || padButtons) exit(0);
-
-		VIDEO_WaitVSync();
-	}
-
-	return 0;
+	WaitExit();
+	return 0;	// NOT REACHED HERE
 }

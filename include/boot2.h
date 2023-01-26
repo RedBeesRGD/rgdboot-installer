@@ -53,6 +53,6 @@ typedef struct {
 WAD *ReadWAD(const char *filename);
 boot2 *ReadBoot2(const char *filename);
 s32 InstallRawBoot2(char* filename);
-s32 InstallWADBoot2();
+s32 InstallWADBoot2( void );
 
 #endif

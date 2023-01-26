@@ -1,21 +1,52 @@
+/* RGD SDBoot Installer */
+
 #include "tools.h"
 
-u32 GetInput(){
-	WPAD_ScanPads();
-	u32 pressed = WPAD_ButtonsDown(0);
-	
-	if(pressed) return pressed;
-	
+u32 WaitForPad() {
+	int wpadButtons = 0;
+	while(1) {
+		WPAD_ScanPads();
+		for(int i = 0; i < 4; i++) {
+				wpadButtons += WPAD_ButtonsDown(i);
+		}
+		if (wpadButtons) break;
+		VIDEO_WaitVSync();
+	}
+	return wpadButtons;
+}
+
+u8 IsWiiU( void ) {
+	if(*(vu16*)0xcd8005a0 == 0xCAFE) return 1;
 	return 0;
 }
 
-void Terminate(){
-	printf("Press HOME to exit\n");
-	u32 pressed;
-	while(1){
-		pressed = GetInput();
-		if(pressed & WPAD_BUTTON_HOME)
-			exit(0);
+u8 IsDolphin( void ) {
+	#ifdef DOLPHIN_CHECK
+	int fd = IOS_Open("/dev/dolphin", 1);
+	if(fd >= 0) {
+		IOS_Close(fd);
+		return 1;
+	}
+	IOS_Close(fd);
+	#endif
+	return 0;
+}
+
+void WaitExit( void ) {
+	u8 i = 0;
+	u32 wpadButtons = 0;
+	u32 padButtons = 0;
+	printf("\n\nPress any controller button to exit.");
+	while(1) {
+		WPAD_ScanPads();
+		PAD_ScanPads();
+		for(i = 0; i < 4; i++) {
+			wpadButtons += WPAD_ButtonsDown(i);
+			padButtons += PAD_ButtonsDown(i);
+		}
+		if (wpadButtons || padButtons) exit(0);
+
+		VIDEO_WaitVSync();
 	}
 }
 
