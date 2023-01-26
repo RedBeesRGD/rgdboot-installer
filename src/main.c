@@ -35,6 +35,23 @@ u32 WaitForPad() {
 	return wpadButtons;
 }
 
+u8 IsWiiU( void ) {
+	if(*(vu16*)0xcd8005a0 == 0xCAFE) return 1;
+	return 0;
+}
+
+u8 IsDolphin( void ) {
+	#ifdef DOLPHIN_CHECK
+	int fd = IOS_Open("/dev/dolphin", 1);
+	if(fd >= 0) {
+		IOS_Close(fd);
+		return 1;
+	}
+	IOS_Close(fd);
+	#endif
+	return 0;
+}
+
 int main(int argc, char **argv) {
 
 	VIDEO_Init();
@@ -52,6 +69,13 @@ int main(int argc, char **argv) {
 	if(rmode->viTVMode&VI_NON_INTERLACE) VIDEO_WaitVSync();
 	
 	printf("\x1b[2;0H");
+	
+	if(IsDolphin()) {
+		ThrowError(errorStrings[ErrStr_InDolphin]);
+	} else if(IsWiiU()) {
+		ThrowError(errorStrings[ErrStr_InCafe]);
+	}
+	
 	printf("RGD SDBoot Installer v%u.%u - by \x1b[32mroot1024\x1b[37m, \x1b[31mRedBees\x1b[37m, \x1b[31mDeadlyFoez\x1b[37m\nraregamingdump.ca", RGDSDB_VER_MAJOR, RGDSDB_VER_MINOR);
 	fatInitDefault();
 
