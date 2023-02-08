@@ -3,11 +3,15 @@
 #ifndef ERRORCODES_H_
 #define ERRORCODES_H_
 
+#define ALL_OK 0
+
 typedef enum {
 	ErrStr_NeedPerms = 0,
 	ErrStr_InDolphin,
 	ErrStr_InCafe,
 	ErrStr_BadFile,
+	ErrStr_SettingTooBig,
+	ErrStr_SettingInvalid,
 	ErrStr_Generic,
 	ErrStr_Count	// Number of values supported by this enum.
 } ErrStr;
@@ -17,6 +21,8 @@ static const char *errorStrings[ErrStr_Count] = {
 	"The RGD SDBoot Installer cannot run in Dolphin, as it relies on hardware\nfeatures which Dolphin does not emulate.\n\nThis can be bypassed with the compiler flag -NO_DOLPHIN_CHECK\nfor testing purposes.",
 	"The RGD SDBoot Installer cannot run on a Wii U, as\ninstalling a custom boot2 has no effect on the Wii U.",
 	"The boot2 file on the SD card is invalid.\nNo data has been written yet, so your system will still boot.",
+	"The setting.txt file is too big.",
+	"The setting.txt file is invalid.",
 	"Error code:"
 };
 

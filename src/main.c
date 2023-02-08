@@ -11,6 +11,7 @@
 #include "seeprom.h"
 #include "boot2.h"
 #include "tools.h"
+#include "prodinfo.h"
 
 #define RGDSDB_VER_MAJOR	0
 #define RGDSDB_VER_MINOR	3
@@ -59,17 +60,21 @@ int main(int argc, char **argv) {
 	
 	u32 choice = 0;
 	s32 ret = 0;
-	printf("\The boot2 version was cleared successfully!\nPress the A button to install SDboot from /boot2/sdboot.bin, or the B button to install nandboot from /boot2/nandboot.bin.\n");
+	printf("\nThe boot2 version was cleared successfully!\nPress the A button to install SDboot from /boot2/sdboot.bin, or the B button to install nandboot from /boot2/nandboot.bin.\n");
 
 choice:
 	choice = WaitForPad();
 	if(choice & WPAD_BUTTON_A) {
-		ret = InstallRawBoot2(SDBOOT_PATH);
-		goto out;
-	} else if(choice & WPAD_BUTTON_B) {
-		ret = InstallRawBoot2(NANDBOOT_PATH);
-		goto out;
-	} else { goto choice; }
+		if(IsMini()) {
+			printf("Installing SDBoot on a Wii Mini could cause your system to be unusable due to the lack of an SD card slot.\nPress any controller button to continue anyways or press the power button on the console to exit."); // TODO: Add SD file check
+		WaitForPad();																			
+		}
+	ret = InstallRawBoot2(SDBOOT_PATH);
+	goto out;
+		} else if(choice & WPAD_BUTTON_B) {
+			ret = InstallRawBoot2(NANDBOOT_PATH);
+			goto out;
+			} else { goto choice; }
 	
 out:
 	switch(ret){
