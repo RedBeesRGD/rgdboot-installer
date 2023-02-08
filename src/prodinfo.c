@@ -40,7 +40,8 @@ int GetProdInfoEntry(const char *name, char *buf, int length) {
 		while(line < (prodInfoBuffer + 0x100) && *line++ != '\n');
 	}
 	ThrowError(errorStrings[ErrStr_SettingInvalid]);
-	// NOT REACHED HERE return 0;
+	// NOT REACHED HERE 
+	return 0;
 }
 
 int OpenProdInfo(char* prodInfoPath) {
