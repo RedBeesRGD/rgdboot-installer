@@ -194,8 +194,8 @@ s32 InstallRawBoot2(char* filename){
 	return ret;
 }
 
-s32 InstallWADBoot2( void ){
-	WAD *wad = ReadWAD(WADBOOT2FILENAME);
+s32 InstallWADBoot2(char* filename){
+	WAD *wad = ReadWAD(filename);
 	
 	if(wad == NULL) WaitExit();
 	

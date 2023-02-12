@@ -5,9 +5,6 @@
 #ifndef BOOT2_H_
 #define BOOT2_H_
 
-#define RAWBOOT2FILENAME "/boot2/boot2.bin"
-#define WADBOOT2FILENAME "/boot2/boot2.wad"
-
 typedef struct {
 	signed_blob *ca_cert;
 	signed_blob *cp_cert;
@@ -53,6 +50,6 @@ typedef struct {
 WAD *ReadWAD(const char *filename);
 boot2 *ReadBoot2(const char *filename);
 s32 InstallRawBoot2(char* filename);
-s32 InstallWADBoot2( void );
+s32 InstallWADBoot2(char* filename);
 
 #endif
