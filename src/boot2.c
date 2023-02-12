@@ -180,7 +180,7 @@ s32 InstallRawBoot2(char* filename){
 	if(b2 == NULL) WaitExit();
 	
 	s32 ret = ES_ImportBoot(b2->tik,
-	                        b2->tikLen,
+							b2->tikLen,
 							b2->certs->tik_cert,
 							CACERTSIZE + XSCERTSIZE,
 							b2->TMD,
@@ -200,7 +200,7 @@ s32 InstallWADBoot2(char* filename){
 	if(wad == NULL) WaitExit();
 	
 	s32 ret = ES_ImportBoot(wad->tik,
-	                        wad->tikLen,
+							wad->tikLen,
 							wad->certs->tik_cert,
 							CACERTSIZE + XSCERTSIZE,
 							wad->TMD,

@@ -51,8 +51,8 @@ int main(int argc, char **argv) {
 	
 	printf("RGD SDBoot Installer v%u.%u - by \x1b[32mroot1024\x1b[37m, \x1b[31mRedBees\x1b[37m, \x1b[31mDeadlyFoez\x1b[37m\nraregamingdump.ca", RGDSDB_VER_MAJOR, RGDSDB_VER_MINOR);
 	if(!fatInitDefault()){
-        ThrowError(errorStrings[ErrStr_SDCard]);
-    }
+		ThrowError(errorStrings[ErrStr_SDCard]);
+	}
 
 	if(!AHBPROT_DISABLED) { 
 		ThrowError(errorStrings[ErrStr_NeedPerms]);
@@ -64,7 +64,7 @@ int main(int argc, char **argv) {
 	u32 choice = 0;
 	s32 ret = 0;
 	printf("\nThe boot2 version was cleared successfully!\nPress the A button to install SDboot from /boot2/sdboot.bin, or the B button to install nandboot from /boot2/nandboot.bin.\n");
-    printf("Press the + button to install a boot2 WAD from /boot2/boot2.wad\n");
+	printf("Press the + button to install a boot2 WAD from /boot2/boot2.wad\n");
 
 choice:
 	choice = WaitForPad();
@@ -79,13 +79,13 @@ choice:
 			ret = InstallRawBoot2(NANDBOOT_PATH);
 			goto out;
 			} else if(choice & WPAD_BUTTON_PLUS){
-                ret = InstallWADBoot2(BOOT2WAD_PATH);
-            } else { goto choice; }
+				ret = InstallWADBoot2(BOOT2WAD_PATH);
+			} else { goto choice; }
 	
 out:
 	switch(ret){
 		case 0:
-            if(choice & WPAD_BUTTON_PLUS) {printf("boot2 WAD was installed successfully!\n"); break;}
+			if(choice & WPAD_BUTTON_PLUS) {printf("boot2 WAD was installed successfully!\n"); break;}
 			printf("%s was installed successfully!\n", (choice & WPAD_BUTTON_A) ? "SDBoot" : "NANDBoot"); break;
 		case -4:
 			ThrowError(errorStrings[ErrStr_InDolphin]); break;
