@@ -69,6 +69,6 @@ u8 IsMini( void ) {
 	static char* buf[17]; // Official internal SC docs say that 16 characters should be allocated for the length.
 	rv = GetProdInfoEntry("MODEL", buf, 17);
 
-	if(strncmp("RVL-201", buf, 7)) return 1;
+	if(!strncmp("RVL-201", buf, 7)) return 1;
 	return 0;
 }
