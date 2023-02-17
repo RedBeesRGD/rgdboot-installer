@@ -62,7 +62,7 @@ void dumpBlocks(const char *filename, int firstBlock, int lastBlock){
 
 	for (int page = firstBlock * 64; page < (lastBlock + 1) * 64; page++) {
 		if(page % 64 == 0)
-			printf("Flashing block %d...\n", page / 64);
+			printf("Dumping block %d...\n", page / 64);
 
 		rv = IOS_Seek(fd, page, 0);
 		if (rv < 0){
