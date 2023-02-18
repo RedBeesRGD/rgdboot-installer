@@ -1,6 +1,8 @@
 /* RGD SDBoot Installer */
 
 #include "tools.h"
+#include "errorhandler.h"
+#include "errorcodes.h"
 
 u32 WaitForPad() {
 	int wpadButtons = 0;
@@ -67,4 +69,10 @@ int CheckFile(FILE* fp, const char *filename){
 		return 0;
 	}
 	return 1;
+}
+
+u32 GetBoot2Version( void ) {
+         u32 boot2Version = 0;
+         if(ES_GetBoot2Version(&boot2Version) < 0) ThrowError(errorStrings[ErrStr_BadBoot2Ver]);
+         return boot2Version;
 }

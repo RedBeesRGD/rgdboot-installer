@@ -14,6 +14,7 @@ typedef enum {
 	ErrStr_SettingInvalid,
 	ErrStr_Generic,
 	ErrStr_SDCard,
+	ErrStr_BadBoot2Ver,
 	ErrStr_Count	// Number of values supported by this enum.
 } ErrStr;
 
@@ -25,6 +26,7 @@ static const char *errorStrings[ErrStr_Count] = {
 	"The setting.txt file is too big.",
 	"The setting.txt file is invalid.",
 	"The RGD SDBoot Installer cannot mount your SD card. Make sure it's inserted and try again.",
+	"The boot2 version couldn't be obtained.",
 	"Error code:"
 };
 

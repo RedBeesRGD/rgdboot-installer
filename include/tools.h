@@ -19,5 +19,6 @@ void WaitExit( void );
 void *alloc(u32 size);
 u32 filesize(FILE* fp);
 int CheckFile(FILE* fp, const char *filename);
+u32 GetBoot2Version( void );
 
 #endif
