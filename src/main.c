@@ -60,8 +60,10 @@ int main(int argc, char **argv) {
 	}
 	printf("\n\nPress any controller button to clear the boot2 version.");
 	WaitForPad();
-	if(!IsDolphin()) ClearVersion(); // ClearVersion() crashes dolphin.
-					 // This is included so that when building with NO_DOLPHIN_CHECK you can get past this point in Dolphin
+	#ifdef DOLPHIN_CHECK
+	ClearVersion(); // ClearVersion() crashes dolphin.
+			// This is included so that when building with NO_DOLPHIN_CHECK you can get past this point in Dolphin
+	#endif
 	
 	u32 choice = 0;
 	s32 ret = 0;
