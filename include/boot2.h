@@ -1,6 +1,10 @@
 /* RGD SDBoot Installer */
 
 #include "tools.h"
+#define MISSING_FILE     -1
+#define BOOT2_DOLPHIN    -4
+#define HASH_MISMATCH    -1022
+#define CANNOT_DOWNGRADE -1031
 
 #ifndef BOOT2_H_
 #define BOOT2_H_
@@ -49,7 +53,9 @@ typedef struct {
 
 WAD *ReadWAD(const char *filename);
 boot2 *ReadBoot2(const char *filename);
-s32 InstallRawBoot2(char* filename);
-s32 InstallWADBoot2(char* filename);
+s32 InstallRawBoot2(const char* filename);
+s32 InstallWADBoot2(const char* filename);
+s32 InstallSDBoot(const char* filename);
+s32 InstallNANDBoot(const char* filename, const char* payload);
 
 #endif

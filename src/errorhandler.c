@@ -8,7 +8,7 @@
 #include "errorhandler.h"
 #include "tools.h"
 
-void ThrowError(char* errorString) {
+void ThrowError(const char* errorString) {
 	printf("\x1b[2;0H\033[2J");
 
 	printf("An error has occurred and the RGD SDBoot Installer can't continue.\nThe details of the error are:\n\n");
@@ -17,7 +17,7 @@ void ThrowError(char* errorString) {
 	WaitExit();
 }
 
-void ThrowErrorEx(char* errorString, s32 errorCode) {
+void ThrowErrorEx(const char* errorString, s32 errorCode) {
 	printf("\x1b[2;0H\033[2J");
 
 	printf("An error has occurred and the RGD SDBoot Installer can't continue.\nThe details of the error are:\n\n");

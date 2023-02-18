@@ -15,11 +15,12 @@
 #include "runtimeiospatch.h"
 
 #define RGDSDB_VER_MAJOR	0
-#define RGDSDB_VER_MINOR	5
+#define RGDSDB_VER_MINOR	6
 
-#define SDBOOT_PATH "/boot2/sdboot.bin"
-#define NANDBOOT_PATH "/boot2/nandboot.bin"
-#define BOOT2WAD_PATH "/boot2/boot2.wad"
+#define SDBOOT_PATH           "/boot2/sdboot.bin"
+#define NANDBOOT_PATH         "/boot2/nandboot.bin"
+#define NANDBOOT_PAYLOAD_PATH "/boot2/payload.bin"
+#define BOOT2WAD_PATH         "/boot2/boot2.wad"
 
 #define AHBPROT_DISABLED (*(vu32*)0xcd800064 == 0xFFFFFFFF)
 
@@ -29,6 +30,7 @@ static GXRModeObj *rmode = NULL;
 int main(int argc, char **argv) {
 	// This will reload to IOS36 while applying the required runtime patches
 	// It will enable access to /dev/flash and fix a bug with ES_ImportBoot
+	// TODO: Maybe try reloading to other IOSes as well (in case IOS36 is missing...)
 	s32 res = IosPatch_FULL(0, 36);
 
 	VIDEO_Init();
@@ -46,6 +48,7 @@ int main(int argc, char **argv) {
 	if(rmode->viTVMode&VI_NON_INTERLACE) VIDEO_WaitVSync();
 	
 	printf("\x1b[2;0H");
+	printf("[DEBUG] res = %d\n", res);
 	
 	if(IsDolphin()) {
 		ThrowError(errorStrings[ErrStr_InDolphin]);
@@ -73,20 +76,22 @@ int main(int argc, char **argv) {
 	
 	u32 choice = 0;
 	s32 ret = 0;
-	printf("\nThe boot2 version was cleared successfully!\nPress the A button to install SDboot from /boot2/sdboot.bin, or the B button to install nandboot from /boot2/nandboot.bin.\n");
-	printf("Press the + button to install a boot2 WAD from /boot2/boot2.wad\n");
+	printf("\nThe boot2 version was cleared successfully!\n");
+	printf("Press the A button to install SDboot from /boot2/sdboot.bin, or the B button to install nandboot from /boot2/nandboot.bin.\n");
+	printf("Press the + button to install a boot2 WAD from /boot2/boot2.wad.\n");
 
 choice:
 	choice = WaitForPad();
 	if(choice & WPAD_BUTTON_A) {
 		if(IsMini()) {
-			printf("Installing SDBoot on a Wii Mini could cause your system to be unusable due to the lack of an SD card slot.\nPress any controller button to continue anyways or press the power button on the console to exit."); // TODO: Add SD file check
-		WaitForPad();																			
+			printf("Installing SDBoot on a Wii Mini could cause your system to be unusable due to the lack of an SD card slot.\n");
+			printf("Press any controller button to continue anyways or press the power button on the console to exit.\n"); // TODO: Add SD file check
+			WaitForPad();																			
 		}
-	ret = InstallRawBoot2(SDBOOT_PATH);
+	ret = InstallSDBoot(SDBOOT_PATH);
 	goto out;
 		} else if(choice & WPAD_BUTTON_B) {
-			ret = InstallRawBoot2(NANDBOOT_PATH);
+			ret = InstallNANDBoot(NANDBOOT_PATH, NANDBOOT_PAYLOAD_PATH);
 			goto out;
 			} else if(choice & WPAD_BUTTON_PLUS){
 				ret = InstallWADBoot2(BOOT2WAD_PATH);
@@ -97,11 +102,11 @@ out:
 		case 0:
 			if(choice & WPAD_BUTTON_PLUS) {printf("boot2 WAD was installed successfully!\n"); break;}
 			printf("%s was installed successfully!\n", (choice & WPAD_BUTTON_A) ? "SDBoot" : "NANDBoot"); break;
-		case -4:
+		case BOOT2_DOLPHIN:
 			ThrowError(errorStrings[ErrStr_InDolphin]); break;
-		case -1022:
+		case HASH_MISMATCH:
 			ThrowError(errorStrings[ErrStr_BadFile]); break;
-		case -1031: // TODO: Find out why this triggers sometimes even after writing SEEPROM
+		case CANNOT_DOWNGRADE: // TODO: Find out why this triggers sometimes even after writing SEEPROM
 			printf("Error: cannot downgrade boot2\n"); break;
 		default:
 			ThrowErrorEx(errorStrings[ErrStr_Generic], ret); break;

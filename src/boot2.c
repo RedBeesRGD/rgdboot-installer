@@ -2,6 +2,7 @@
 
 // Uses the same method as the DOP-Mii boot2 installation routine
 #include "boot2.h"
+#include "flash.h"
 
 #define ALIGN(a,b) ((((a)+(b)-1)/(b))*(b))
 
@@ -174,10 +175,11 @@ boot2 *ReadBoot2(const char *filename){
 	return b2;
 }
 
-s32 InstallRawBoot2(char* filename){
+s32 InstallRawBoot2(const char* filename){
 	boot2 *b2 = ReadBoot2(filename);
 	
-	if(b2 == NULL) WaitExit();
+	if(b2 == NULL)
+		return MISSING_FILE;
 	
 	s32 ret = ES_ImportBoot(b2->tik,
 							b2->tikLen,
@@ -194,10 +196,11 @@ s32 InstallRawBoot2(char* filename){
 	return ret;
 }
 
-s32 InstallWADBoot2(char* filename){
+s32 InstallWADBoot2(const char* filename){
 	WAD *wad = ReadWAD(filename);
 	
-	if(wad == NULL) WaitExit();
+	if(wad == NULL)
+		return MISSING_FILE;
 	
 	s32 ret = ES_ImportBoot(wad->tik,
 							wad->tikLen,
@@ -212,4 +215,29 @@ s32 InstallWADBoot2(char* filename){
 							);
 	
 	return ret;
+}
+
+s32 InstallSDBoot(const char* filename){
+	return InstallRawBoot2(filename);
+}
+
+s32 InstallNANDBoot(const char* filename, const char* payload){
+	// Let's check if the payload file is present...
+	// It's not a good idea to install nandboot without the payload :)
+
+	FILE *tmp = fopen(payload, "r");
+	if(tmp == NULL)
+		return MISSING_FILE;
+	fclose(tmp);
+
+	s32 ret = InstallRawBoot2(filename);
+	if(ret < 0)
+		return ret;
+
+	// TODO: check file size and hash
+	// TODO: add return codes (for error checking)
+	flashBlock(payload, 1);
+	eraseBlocks(2, 7);
+
+	return 0;
 }

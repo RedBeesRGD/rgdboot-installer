@@ -3,6 +3,7 @@
 #include <malloc.h>
 #include <string.h>
 #include <stdio.h>
+#include <gccore.h>
 #include <gctypes.h>
 
 #include "prodinfo.h"

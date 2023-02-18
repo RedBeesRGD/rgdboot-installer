@@ -3,7 +3,7 @@
 #ifndef ERRORHANDLER_H_
 #define ERRORHANDLER_H_
 
-extern void ThrowError(char* errorString);
-extern void ThrowErrorEx(char* errorString, s32 errorCode);
+extern void ThrowError(const char* errorString);
+extern void ThrowErrorEx(const char* errorString, s32 errorCode);
 
 #endif
