@@ -12,6 +12,7 @@
 #include "boot2.h"
 #include "tools.h"
 #include "prodinfo.h"
+#include "runtimeiospatch.h"
 
 #define RGDSDB_VER_MAJOR	0
 #define RGDSDB_VER_MINOR	5
@@ -26,6 +27,9 @@ static void *xfb = NULL;
 static GXRModeObj *rmode = NULL;
 
 int main(int argc, char **argv) {
+	// This will reload to IOS36 while applying the required runtime patches
+	// It will enable access to /dev/flash and fix a bug with ES_ImportBoot
+	s32 res = IosPatch_FULL(0, 36);
 
 	VIDEO_Init();
 	WPAD_Init();
