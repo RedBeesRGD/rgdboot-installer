@@ -14,7 +14,7 @@
 #include "prodinfo.h"
 
 #define RGDSDB_VER_MAJOR	0
-#define RGDSDB_VER_MINOR	3
+#define RGDSDB_VER_MINOR	5
 
 #define SDBOOT_PATH "/boot2/sdboot.bin"
 #define NANDBOOT_PATH "/boot2/nandboot.bin"
@@ -61,8 +61,10 @@ int main(int argc, char **argv) {
 	printf("\n\nPress any controller button to clear the boot2 version.");
 	WaitForPad();
 	#ifdef DOLPHIN_CHECK
+	if(GetBoot2Version() > 0) {
 	ClearVersion(); // ClearVersion() crashes dolphin.
 			// This is included so that when building with NO_DOLPHIN_CHECK you can get past this point in Dolphin
+	}
 	#endif
 	
 	u32 choice = 0;

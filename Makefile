@@ -32,6 +32,12 @@ ifdef NO_DOLPHIN_CHECK
 	TARGET = sdboot-installer_noDolphinCheck
 endif
 
+# Skipping the version clear will cause a brick on Wiis with a boot2 version higher than 0 - use for testing if you have a flash programmer only
+ifdef NO_VERSION_CLEAR
+	CFLAGS = -O2 -Wall $(MACHDEP) $(INCLUDE) -DNO_VERSION_CLEAR
+	TARGET = sdboot-installer_noVersionClear
+endif
+
 CXXFLAGS	=	$(CFLAGS)
 
 LDFLAGS	=	$(MACHDEP) -Wl,-Map,$(notdir $@).map

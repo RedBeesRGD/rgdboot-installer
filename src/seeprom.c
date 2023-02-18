@@ -104,8 +104,9 @@ int SEEPROMWrite(const void *src, unsigned int offset, unsigned int size) {
 		return size;
 }
 
-void ClearVersion()
-{
+void ClearVersion() {
+		#ifndef NO_VERSION_CLEAR
 		u8 clear[12] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
 		SEEPROMWrite(clear, 0x48, 12);
+		#endif
 }

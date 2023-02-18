@@ -23,15 +23,19 @@ u8 IsWiiU( void ) {
 }
 
 u8 IsDolphin( void ) {
-	#ifdef DOLPHIN_CHECK
+	u8 dolphinFlag = 0;
 	int fd = IOS_Open("/dev/dolphin", 1);
 	if(fd >= 0) {
 		IOS_Close(fd);
-		return 1;
+		dolphinFlag = 1;
 	}
 	IOS_Close(fd);
-	#endif
+	#ifndef DOLPHIN_CHECK
+	if(!dolphinFlag && GetBoot2Version()) ThrowError(errorStrings[ErrStr_WrongVersion]);
 	return 0;
+	#else
+	return dolphinFlag;
+	#endif
 }
 
 void WaitExit( void ) {

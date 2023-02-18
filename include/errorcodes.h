@@ -15,6 +15,7 @@ typedef enum {
 	ErrStr_Generic,
 	ErrStr_SDCard,
 	ErrStr_BadBoot2Ver,
+	ErrStr_WrongVersion,
 	ErrStr_Count	// Number of values supported by this enum.
 } ErrStr;
 
@@ -27,6 +28,7 @@ static const char *errorStrings[ErrStr_Count] = {
 	"The setting.txt file is invalid.",
 	"The RGD SDBoot Installer cannot mount your SD card. Make sure it's inserted and try again.",
 	"The boot2 version couldn't be obtained.",
+	"The version of the RGD SDBoot Installer with Dolphin checking disabled will not run on a regular Wii with a boot2 version higher than v0, as it would cause a brick.",
 	"Error code:"
 };
 
