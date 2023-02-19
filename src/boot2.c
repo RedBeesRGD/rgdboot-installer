@@ -224,6 +224,7 @@ s32 InstallSDBoot(const char* filename){
 s32 InstallNANDBoot(const char* filename, const char* payload){
 	// Let's check if the payload file is present...
 	// It's not a good idea to install nandboot without the payload :)
+	// TODO: check file size and hash
 
 	FILE *tmp = fopen(payload, "r");
 	if(tmp == NULL)
@@ -234,10 +235,14 @@ s32 InstallNANDBoot(const char* filename, const char* payload){
 	if(ret < 0)
 		return ret;
 
-	// TODO: check file size and hash
-	// TODO: add return codes (for error checking)
-	flashBlock(payload, 1);
-	eraseBlocks(2, 7);
+	ret = flashBlock(payload, 1);
+	if(ret < 0)
+		return ret;
+
+	// Erase blocks 2-6. No need to erase the boot2 backup copy
+	ret = eraseBlocks(2, 6);
+	if(ret < 0)
+		return ret;
 
 	return 0;
 }

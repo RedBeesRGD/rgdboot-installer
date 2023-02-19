@@ -102,6 +102,8 @@ out:
 		case 0:
 			if(choice & WPAD_BUTTON_PLUS) {printf("boot2 WAD was installed successfully!\n"); break;}
 			printf("%s was installed successfully!\n", (choice & WPAD_BUTTON_A) ? "SDBoot" : "NANDBoot"); break;
+		case MISSING_FILE:
+			ThrowError(errorStrings[ErrStr_MissingFiles]); break;
 		case BOOT2_DOLPHIN:
 			ThrowError(errorStrings[ErrStr_InDolphin]); break;
 		case HASH_MISMATCH:
