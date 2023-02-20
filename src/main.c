@@ -13,9 +13,10 @@
 #include "tools.h"
 #include "prodinfo.h"
 #include "runtimeiospatch.h"
+#include "menu.h"
 
 #define RGDSDB_VER_MAJOR	0
-#define RGDSDB_VER_MINOR	6
+#define RGDSDB_VER_MINOR	7
 
 #define SDBOOT_PATH           "/boot2/sdboot.bin"
 #define NANDBOOT_PATH         "/boot2/nandboot.bin"
@@ -48,24 +49,25 @@ int main(int argc, char **argv) {
 	if(rmode->viTVMode&VI_NON_INTERLACE) VIDEO_WaitVSync();
 	
 	printf("\x1b[2;0H");
-	printf("[DEBUG] res = %d\n", res);
 	
 	if(IsDolphin()) {
 		ThrowError(errorStrings[ErrStr_InDolphin]);
 	} else if(IsWiiU()) {
 		ThrowError(errorStrings[ErrStr_InCafe]);
 	}
-	
-	printf("RGD SDBoot Installer v%u.%u - by \x1b[32mroot1024\x1b[37m, \x1b[31mRedBees\x1b[37m, \x1b[31mDeadlyFoez\x1b[37m\nraregamingdump.ca", RGDSDB_VER_MAJOR, RGDSDB_VER_MINOR);
-	printf("\nCurrent boot2 version: %i", GetBoot2Version());
 	if(!fatInitDefault()){
 		ThrowError(errorStrings[ErrStr_SDCard]);
 	}
-
 	if(!AHBPROT_DISABLED) { 
 		ThrowError(errorStrings[ErrStr_NeedPerms]);
 	}
-	printf("\n\nPress any controller button to clear the boot2 version.");
+
+	printf("RGD SDBoot Installer v%u.%u - by \x1b[32mroot1024\x1b[37m, \x1b[31mRedBees\x1b[37m, \x1b[31mDeadlyFoez\x1b[37m\nraregamingdump.ca", RGDSDB_VER_MAJOR, RGDSDB_VER_MINOR);
+	printf("\nCurrent boot2 version: %i [DEBUG] res = %d\n\n", GetBoot2Version(), res);
+	
+	EnterMenu();
+
+	/*printf("\n\nPress any controller button to clear the boot2 version.");
 	WaitForPad();
 	#ifdef DOLPHIN_CHECK
 	if(GetBoot2Version() > 0) {
@@ -112,7 +114,7 @@ out:
 			printf("Error: cannot downgrade boot2\n"); break;
 		default:
 			ThrowErrorEx(errorStrings[ErrStr_Generic], ret); break;
-	}
+	}*/
 
 	WaitExit();
 	return 0;	// NOT REACHED HERE

@@ -9,6 +9,8 @@
 #include <fat.h>
 #include <wiiuse/wpad.h>
 
+#define RGDSDB_PAD_BUTTON_UP 0x777
+
 #ifndef TOOLS_H_
 #define TOOLS_H_
 

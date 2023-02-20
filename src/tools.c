@@ -5,15 +5,29 @@
 #include "errorcodes.h"
 
 u32 WaitForPad() {
-	int wpadButtons = 0;
+	u32 wpadButtons = 0;
+	u32 padButtons = 0;
+
 	while(1) {
 		WPAD_ScanPads();
+		PAD_ScanPads();
 		for(int i = 0; i < 4; i++) {
-				wpadButtons += WPAD_ButtonsDown(i);
+				wpadButtons |= WPAD_ButtonsDown(i);
+				padButtons |= PAD_ButtonsDown(i); 
 		}
-		if (wpadButtons) break;
+		if (wpadButtons || padButtons) break;
 		VIDEO_WaitVSync();
 	}
+	
+	if(padButtons & PAD_BUTTON_UP) {
+		padButtons &= ~PAD_BUTTON_UP;
+		padButtons |= RGDSDB_PAD_BUTTON_UP;	// To prevent conflicts
+	}
+		
+//	u32 ret = 0;
+//	if(!wpadButtons) ret = padButtons;
+//	if(!padButtons) ret = wpadButtons;
+
 	return wpadButtons;
 }
 
@@ -39,21 +53,9 @@ u8 IsDolphin( void ) {
 }
 
 void WaitExit( void ) {
-	u8 i = 0;
-	u32 wpadButtons = 0;
-	u32 padButtons = 0;
 	printf("\n\nPress any controller button to exit.");
-	while(1) {
-		WPAD_ScanPads();
-		PAD_ScanPads();
-		for(i = 0; i < 4; i++) {
-			wpadButtons += WPAD_ButtonsDown(i);
-			padButtons += PAD_ButtonsDown(i);
-		}
-		if (wpadButtons || padButtons) exit(0);
-
-		VIDEO_WaitVSync();
-	}
+	WaitForPad();
+	exit(0);
 }
 
 void *alloc(u32 size){
