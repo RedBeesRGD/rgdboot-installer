@@ -28,8 +28,8 @@
 void HandleInstall(s32 ret, u8 installType) {
 	switch(ret){
 		case 0:
-			printf("%s was installed successfully!\n", (installType == INSTALL_SD_BOOT) ? "SDBoot" : "NANDBoot"); break;
 			if(installType == INSTALL_WAD) { printf("boot2 WAD was installed successfully!\n"); break;}
+			printf("%s was installed successfully!\n", (installType == INSTALL_SD_BOOT) ? "SDBoot" : "NANDBoot"); break;
 		case MISSING_FILE:
 			ThrowError(errorStrings[ErrStr_MissingFiles]); break;
 		case BOOT2_DOLPHIN:
