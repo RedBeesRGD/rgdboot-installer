@@ -235,12 +235,12 @@ s32 InstallNANDBoot(const char* filename, const char* payload){
 	if(ret < 0)
 		return ret;
 
-	ret = flashBlock(payload, 1);
+	ret = flashBlock(payload, 2);
 	if(ret < 0)
 		return ret;
 
-	// Erase blocks 2-6. No need to erase the boot2 backup copy
-	ret = eraseBlocks(2, 6);
+	// Erase blocks 3-6. No need to erase the boot2 backup copy
+	ret = eraseBlocks(3, 6);
 	if(ret < 0)
 		return ret;
 
