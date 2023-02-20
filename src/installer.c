@@ -46,10 +46,10 @@ void HandleInstall(s32 ret, u8 installType) {
 void SEEPROMClearStep( void ) {
 	printf("\n\nPress any controller button to clear the boot2 version.");
 	WaitForPad();
-	#ifdef DOLPHIN_CHECK
+	#ifdef DOLPHIN_CHECK // ClearVersion() crashes dolphin.
+			     // This is included so that when building with NO_DOLPHIN_CHECK you can get past this point in Dolphin
 	if(GetBoot2Version() > 0) {
-	ClearVersion(); // ClearVersion() crashes dolphin.
-			// This is included so that when building with NO_DOLPHIN_CHECK you can get past this point in Dolphin
+	ClearVersion();
 	}
 	#endif
 	
@@ -61,8 +61,8 @@ void SDBootInstaller( void ) {
 	if(IsMini()) {
 		printf("Installing SDBoot on a Wii Mini could cause your system to be unusable due to the lack of an SD card slot.\n");
 		printf("Press any controller button to continue anyways or press the power button on the console to exit.\n"); // TODO: Add SD file check
-		WaitForPad();																			
-		}
+		WaitForPad();
+	}
 	
 	HandleInstall(InstallSDBoot(SDBOOT_PATH), INSTALL_SD_BOOT);
 	printf("\nPress any button to continue.");

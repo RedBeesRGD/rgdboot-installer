@@ -59,10 +59,19 @@ void PrintCursor( void ) {
 
 void Move(u8 direction) {
 	if(direction == UP) {
-		if(menuPosition > 0) menuPosition--;
-	} else if (direction == DOWN) {
-		if(menuPosition < MenuStr_Count - 1) menuPosition++;
+		if(menuPosition > 0) {
+			menuPosition--;
+		} else {
+			menuPosition = MenuStr_Count - 1;
+		}
+	}  else if (direction == DOWN) {
+		if(menuPosition < MenuStr_Count - 1) {
+			menuPosition++;
+		} else {
+			menuPosition = 0;
+		}
 	}
+
 	PrintMenu();
 	PrintCursor();
 }
