@@ -41,6 +41,8 @@ void EnterOption( void ) {
 			exit(0);
 			break;
 		default:
+			printf("\n\nThis doesn't work yet.");
+			WaitForPad();
 			break;
 	}
 	ClearScreen();
