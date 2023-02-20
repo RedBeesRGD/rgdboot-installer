@@ -67,55 +67,5 @@ int main(int argc, char **argv) {
 	
 	EnterMenu();
 
-	/*printf("\n\nPress any controller button to clear the boot2 version.");
-	WaitForPad();
-	#ifdef DOLPHIN_CHECK
-	if(GetBoot2Version() > 0) {
-	ClearVersion(); // ClearVersion() crashes dolphin.
-			// This is included so that when building with NO_DOLPHIN_CHECK you can get past this point in Dolphin
-	}
-	#endif
-	
-	u32 choice = 0;
-	s32 ret = 0;
-	printf("\nThe boot2 version was cleared successfully!\n");
-	printf("Press the A button to install SDboot from /boot2/sdboot.bin, or the B button to install nandboot from /boot2/nandboot.bin.\n");
-	printf("Press the + button to install a boot2 WAD from /boot2/boot2.wad.\n");
-
-choice:
-	choice = WaitForPad();
-	if(choice & WPAD_BUTTON_A) {
-		if(IsMini()) {
-			printf("Installing SDBoot on a Wii Mini could cause your system to be unusable due to the lack of an SD card slot.\n");
-			printf("Press any controller button to continue anyways or press the power button on the console to exit.\n"); // TODO: Add SD file check
-			WaitForPad();																			
-		}
-	ret = InstallSDBoot(SDBOOT_PATH);
-	goto out;
-		} else if(choice & WPAD_BUTTON_B) {
-			ret = InstallNANDBoot(NANDBOOT_PATH, NANDBOOT_PAYLOAD_PATH);
-			goto out;
-			} else if(choice & WPAD_BUTTON_PLUS){
-				ret = InstallWADBoot2(BOOT2WAD_PATH);
-			} else { goto choice; }
-	
-out:
-	switch(ret){
-		case 0:
-			if(choice & WPAD_BUTTON_PLUS) {printf("boot2 WAD was installed successfully!\n"); break;}
-			printf("%s was installed successfully!\n", (choice & WPAD_BUTTON_A) ? "SDBoot" : "NANDBoot"); break;
-		case MISSING_FILE:
-			ThrowError(errorStrings[ErrStr_MissingFiles]); break;
-		case BOOT2_DOLPHIN:
-			ThrowError(errorStrings[ErrStr_InDolphin]); break;
-		case HASH_MISMATCH:
-			ThrowError(errorStrings[ErrStr_BadFile]); break;
-		case CANNOT_DOWNGRADE: // TODO: Find out why this triggers sometimes even after writing SEEPROM
-			printf("Error: cannot downgrade boot2\n"); break;
-		default:
-			ThrowErrorEx(errorStrings[ErrStr_Generic], ret); break;
-	}*/
-
-	WaitExit();
-	return 0;	// NOT REACHED HERE
+	return 0; // NOT REACHED HERE
 }
