@@ -21,6 +21,7 @@ void WaitExit( void );
 void *alloc(u32 size);
 u32 filesize(FILE* fp);
 int CheckFile(FILE* fp, const char *filename);
+int CheckFileHash(const char *filename, u8 expectedHash[], int expectedSize);
 u32 GetBoot2Version( void );
 
 #endif

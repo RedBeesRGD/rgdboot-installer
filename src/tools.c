@@ -3,6 +3,7 @@
 #include "tools.h"
 #include "errorhandler.h"
 #include "errorcodes.h"
+#include "sha256.h"
 
 u32 WaitForPad() {
 	u32 wpadButtons = 0;
@@ -75,6 +76,31 @@ int CheckFile(FILE* fp, const char *filename){
 		return 0;
 	}
 	return 1;
+}
+
+int CheckFileHash(const char *filename, u8 expectedHash[], int expectedSize){
+	FILE *fp = fopen(filename, "rb");
+	int bytesread;
+
+	if(fp == NULL)
+		return 2;
+
+	BYTE payload[expectedSize];
+	bytesread = fread(payload, 1, expectedSize, fp);
+	fclose(fp);
+
+	if(bytesread != expectedSize)
+		return 0;
+
+	BYTE actualHash[SHA256_BLOCK_SIZE];
+	
+	SHA256_CTX ctx;
+	
+	sha256_init(&ctx);
+	sha256_update(&ctx, payload, expectedSize);
+	sha256_final(&ctx, actualHash);
+
+	return memcmp(expectedHash, actualHash, SHA256_BLOCK_SIZE);
 }
 
 u32 GetBoot2Version( void ) {

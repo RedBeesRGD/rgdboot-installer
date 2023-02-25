@@ -36,8 +36,8 @@ void HandleInstall(s32 ret, u8 installType) {
 			ThrowError(errorStrings[ErrStr_InDolphin]); break;
 		case HASH_MISMATCH:
 			ThrowError(errorStrings[ErrStr_BadFile]); break;
-		case CANNOT_DOWNGRADE: // TODO: Find out why this triggers sometimes even after writing SEEPROM
-			printf("Error: cannot downgrade boot2\n"); break;
+//		case CANNOT_DOWNGRADE:
+//			printf("Error: cannot downgrade boot2\n"); break;
 		default:
 			ThrowErrorEx(errorStrings[ErrStr_Generic], ret); break;
 	}

@@ -16,12 +16,7 @@
 #include "menu.h"
 
 #define RGDSDB_VER_MAJOR	0
-#define RGDSDB_VER_MINOR	7
-
-#define SDBOOT_PATH           "/boot2/sdboot.bin"
-#define NANDBOOT_PATH         "/boot2/nandboot.bin"
-#define NANDBOOT_PAYLOAD_PATH "/boot2/payload.bin"
-#define BOOT2WAD_PATH         "/boot2/boot2.wad"
+#define RGDSDB_VER_MINOR	8
 
 #define AHBPROT_DISABLED (*(vu32*)0xcd800064 == 0xFFFFFFFF)
 
@@ -63,7 +58,7 @@ int main(int argc, char **argv) {
 	}
 
 	printf("RGD SDBoot Installer v%u.%u - by \x1b[32mroot1024\x1b[37m, \x1b[31mRedBees\x1b[37m, \x1b[31mDeadlyFoez\x1b[37m\nraregamingdump.ca", RGDSDB_VER_MAJOR, RGDSDB_VER_MINOR);
-	printf("\nCurrent boot2 version: %i [DEBUG] res = %d\n\n", GetBoot2Version(), res);
+	printf("\nCurrent boot2 version: %i\n\n", GetBoot2Version());
 	
 	EnterMenu();
 

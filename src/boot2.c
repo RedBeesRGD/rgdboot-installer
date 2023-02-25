@@ -222,14 +222,18 @@ s32 InstallSDBoot(const char* filename){
 }
 
 s32 InstallNANDBoot(const char* filename, const char* payload){
-	// Let's check if the payload file is present...
-	// It's not a good idea to install nandboot without the payload :)
-	// TODO: check file size and hash
+	// Let's check if the payload hash is correct ...
+	// It's not a good idea to install nandboot without a non-functional payload :)
 
-	FILE *tmp = fopen(payload, "r");
-	if(tmp == NULL)
-		return MISSING_FILE;
-	fclose(tmp);
+	u8 expectedHash[] = {0xa7,0xf6,0x41,0x30,0xc6,0xda,0xc4,0x99,0x95,0xe3,0xe6,0xee,0x10,0x26,0xc8,0xcb,0x29,0x4d,0x9d,0xb3,0xcb,0x18,0x09,0x79,0x52,0x50,0x6c,0x49,0x46,0x52,0xaa,0x01};
+	int k = CheckFileHash(payload, expectedHash, RAWBOOT2SIZE);
+
+	if(!k){
+		if(k == 2)
+			return MISSING_FILE;
+		else
+			return HASH_MISMATCH;
+	}
 
 	s32 ret = InstallRawBoot2(filename);
 	if(ret < 0)
