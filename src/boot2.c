@@ -123,12 +123,12 @@ boot2 *ReadBoot2(const char *filename){
 		pageIndex++;
 	}
 	
-	FILE *out = fopen("noecc.bin", "wb"); // Write output file without ECC
+	FILE *out = fopen("/boot2/boot2_noecc.bin", "wb"); // Write output file without ECC
 	fwrite(pages, 1, PAGESIZE * pageCount, out);
 	fclose(out);
 	
-	fp = fopen("noecc.bin", "rb");
-	if(!CheckFile(fp, "noecc.bin")){ // Read file without ECC
+	fp = fopen("/boot2/boot2_noecc.bin", "rb");
+	if(!CheckFile(fp, "/boot2/boot2_noecc.bin")){ // Read file without ECC
 		printf("Something went wrong... Aborting\n");
 		WaitExit();
 	}
@@ -249,4 +249,8 @@ s32 InstallNANDBoot(const char* filename, const char* payload){
 		return ret;
 
 	return 0;
+}
+
+s32 BackupBoot2Blocks(const char* filename){
+	return dumpBlocks(filename, 1, 7);
 }

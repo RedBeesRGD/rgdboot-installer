@@ -20,6 +20,7 @@
 #define NANDBOOT_PATH         "/boot2/nandboot.bin"
 #define NANDBOOT_PAYLOAD_PATH "/boot2/payload.bin"
 #define BOOT2WAD_PATH         "/boot2/boot2.wad"
+#define BOOT2_BACKUP_PATH     "/boot2/backup.bin"
 
 #define INSTALL_SD_BOOT 0
 #define INSTALL_NAND_BOOT 1
@@ -64,6 +65,7 @@ void SDBootInstaller( void ) {
 		WaitForPad();
 	}
 	
+	BackupBoot2Blocks(BOOT2_BACKUP_PATH); // Let's backup the boot2 blocks first...
 	HandleInstall(InstallSDBoot(SDBOOT_PATH), INSTALL_SD_BOOT);
 	printf("\nPress any button to continue.");
 	WaitForPad();
@@ -72,6 +74,7 @@ void SDBootInstaller( void ) {
 void NANDBootInstaller( void ) {
 	SEEPROMClearStep();
 
+	BackupBoot2Blocks(BOOT2_BACKUP_PATH); // Let's backup the boot2 blocks first...
 	HandleInstall(InstallNANDBoot(NANDBOOT_PATH, NANDBOOT_PAYLOAD_PATH), INSTALL_NAND_BOOT);	
 	printf("\nPress any button to continue.");
 	WaitForPad();
@@ -80,6 +83,7 @@ void NANDBootInstaller( void ) {
 void Boot2WADInstaller( void ) {	
 	printf("\n\n");
 
+	BackupBoot2Blocks(BOOT2_BACKUP_PATH); // Let's backup the boot2 blocks first...
 	HandleInstall(InstallWADBoot2(BOOT2WAD_PATH), INSTALL_WAD);	
 	printf("\nPress any button to continue.");
 	WaitForPad();	

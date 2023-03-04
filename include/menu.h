@@ -29,6 +29,11 @@ static const char *menuStrings[MenuStr_Count] = {
 	"Exit to HBC"
 };
 
+void ClearScreen( void );
+void EnterOption( void );
+void PrintCursor( void );
+void Move(u8 direction);
+void PrintMenu( void );
 u8 EnterMenu( void );
 
 #endif
