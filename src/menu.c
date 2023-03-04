@@ -34,6 +34,9 @@ void EnterOption( void ) {
 		case MenuStr_InstallBoot2WAD:
 			Boot2WADInstaller();
 			break;
+		case MenuStr_InstallBoot2Backup:
+			Boot2BackupInstaller();
+			break;
 /*		case MenuStr_Credits:
 			printf("\n\nApp Developers:\n       \x1b[32mroot1024\x1b[37m\n      \x1b31mRedBees\x1b[37m\n\nPayload Developers:\n         nitr8\n\nTesters:\n		\x1b[31mDeadlyFoez\x1b[37m\n\nUsing libruntimeiospatch by Nanolx\n\nAnd Wack0 for making it possible!");
 			break;*/

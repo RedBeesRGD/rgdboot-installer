@@ -58,5 +58,6 @@ s32 InstallWADBoot2(const char* filename);
 s32 InstallSDBoot(const char* filename);
 s32 InstallNANDBoot(const char* filename, const char* payload);
 s32 BackupBoot2Blocks(const char* filename);
+s32 RestoreBoot2Blocks(const char* filename);
 
 #endif

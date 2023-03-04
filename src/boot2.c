@@ -254,3 +254,7 @@ s32 InstallNANDBoot(const char* filename, const char* payload){
 s32 BackupBoot2Blocks(const char* filename){
 	return dumpBlocks(filename, 1, 7);
 }
+
+s32 RestoreBoot2Blocks(const char* filename){
+	return flashBlocks(filename, 1, 7);
+}
