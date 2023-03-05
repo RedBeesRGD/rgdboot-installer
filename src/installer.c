@@ -26,6 +26,7 @@
 #define INSTALL_NAND_BOOT 1
 #define INSTALL_WAD       2
 #define INSTALL_BACKUP    3
+#define MAKE_BOOT2_BACKUP 4
 
 void HandleInstall(s32 ret, u8 installType) {
 	switch(ret){
@@ -40,6 +41,9 @@ void HandleInstall(s32 ret, u8 installType) {
 					break;
 				case INSTALL_BACKUP:
 					printf("boot2 backup was installed successfully!\n");
+					break;
+				case MAKE_BOOT2_BACKUP:
+					printf("boot2 backup was performed successfully!\n");
 					break;
 			} break;
 		case MISSING_FILE:
@@ -76,7 +80,6 @@ void SDBootInstaller( void ) {
 		WaitForPad();
 	}
 	
-	BackupBoot2Blocks(BOOT2_BACKUP_PATH); // Let's backup the boot2 blocks first...
 	HandleInstall(InstallSDBoot(SDBOOT_PATH), INSTALL_SD_BOOT);
 	printf("\nPress any button to continue.");
 	WaitForPad();
@@ -85,7 +88,6 @@ void SDBootInstaller( void ) {
 void NANDBootInstaller( void ) {
 	SEEPROMClearStep();
 
-	BackupBoot2Blocks(BOOT2_BACKUP_PATH); // Let's backup the boot2 blocks first...
 	HandleInstall(InstallNANDBoot(NANDBOOT_PATH, NANDBOOT_PAYLOAD_PATH), INSTALL_NAND_BOOT);	
 	printf("\nPress any button to continue.");
 	WaitForPad();
@@ -94,10 +96,9 @@ void NANDBootInstaller( void ) {
 void Boot2WADInstaller( void ) {	
 	printf("\n\n");
 
-	BackupBoot2Blocks(BOOT2_BACKUP_PATH); // Let's backup the boot2 blocks first...
 	HandleInstall(InstallWADBoot2(BOOT2WAD_PATH), INSTALL_WAD);	
 	printf("\nPress any button to continue.");
-	WaitForPad();	
+	WaitForPad();
 }
 
 void Boot2BackupInstaller( void ) {	
@@ -105,5 +106,13 @@ void Boot2BackupInstaller( void ) {
 
 	HandleInstall(RestoreBoot2Blocks(BOOT2_BACKUP_PATH), INSTALL_BACKUP);	
 	printf("\nPress any button to continue.");
-	WaitForPad();	
+	WaitForPad();
+}
+
+void Boot2BackupMake( void ) {
+	printf("\n\n");
+
+	HandleInstall(BackupBoot2Blocks(BOOT2_BACKUP_PATH), MAKE_BOOT2_BACKUP);	
+	printf("\nPress any button to continue.");
+	WaitForPad();
 }

@@ -17,6 +17,7 @@ typedef enum {
 	MenuStr_InstallNANDBoot,
 	MenuStr_InstallBoot2WAD,
 	MenuStr_InstallBoot2Backup,
+	MenuStr_MakeBoot2Backup,
 	MenuStr_Credits,
 	MenuStr_Exit,
 	MenuStr_Count	// Number of values supported by this enum.
@@ -27,6 +28,7 @@ static const char *menuStrings[MenuStr_Count] = {
 	"Install NANDBoot",
 	"Install a boot2 WAD",
 	"Install a boot2 backup",
+	"Perform a boot2 backup",
 	"View Credits",
 	"Exit to HBC"
 };

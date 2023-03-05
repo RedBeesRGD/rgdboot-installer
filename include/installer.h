@@ -16,5 +16,6 @@ void SDBootInstaller( void );
 void NANDBootInstaller( void );
 void Boot2WADInstaller( void );
 void Boot2BackupInstaller( void );
+void Boot2BackupMake( void );
 
 #endif
