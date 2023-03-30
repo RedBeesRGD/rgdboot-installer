@@ -239,7 +239,7 @@ s32 InstallNANDBoot(const char* filename, const char* payload){
 	if(ret < 0)
 		return ret;
 
-	ret = flashBlock(payload, 2);
+	ret = flashFile(payload, 2, 2, NULL);
 	if(ret < 0)
 		return ret;
 
@@ -256,5 +256,5 @@ s32 BackupBoot2Blocks(const char* filename){
 }
 
 s32 RestoreBoot2Blocks(const char* filename){
-	return flashBlocks(filename, 1, 7);
+	return flashFile(filename, 1, 7, NULL);
 }

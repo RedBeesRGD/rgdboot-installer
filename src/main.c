@@ -14,6 +14,7 @@
 #include "prodinfo.h"
 #include "runtimeiospatch.h"
 #include "menu.h"
+#include "flash.h"
 
 #define RGDSDB_VER_MAJOR	0
 #define RGDSDB_VER_MINOR	8
@@ -56,6 +57,7 @@ int main(int argc, char **argv) {
 	if(!AHBPROT_DISABLED) { 
 		ThrowError(errorStrings[ErrStr_NeedPerms]);
 	}
+	NANDFlashInit();
 
 	printf("RGD SDBoot Installer v%u.%u - by \x1b[32mroot1024\x1b[37m, \x1b[31mRedBees\x1b[37m, \x1b[31mDeadlyFoez\x1b[37m\nraregamingdump.ca", RGDSDB_VER_MAJOR, RGDSDB_VER_MINOR);
 	printf("\nCurrent boot2 version: %i\n\n", GetBoot2Version());

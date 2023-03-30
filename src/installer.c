@@ -15,6 +15,7 @@
 #include "runtimeiospatch.h"
 #include "menu.h"
 #include "installer.h"
+#include "flash.h"
 
 #define SDBOOT_PATH           "/boot2/sdboot.bin"
 #define NANDBOOT_PATH         "/boot2/nandboot.bin"
@@ -27,6 +28,7 @@
 #define INSTALL_WAD       2
 #define INSTALL_BACKUP    3
 #define MAKE_BOOT2_BACKUP 4
+#define RESTORE_NAND_BACKUP 5
 
 void HandleInstall(s32 ret, u8 installType) {
 	switch(ret){
@@ -45,6 +47,9 @@ void HandleInstall(s32 ret, u8 installType) {
 				case MAKE_BOOT2_BACKUP:
 					printf("boot2 backup was performed successfully!\n");
 					break;
+				case RESTORE_NAND_BACKUP:
+					printf("NAND backup was restored successfully!\n");
+					break;
 			} break;
 		case MISSING_FILE:
 			ThrowError(errorStrings[ErrStr_MissingFiles]); break;
@@ -52,8 +57,8 @@ void HandleInstall(s32 ret, u8 installType) {
 			ThrowError(errorStrings[ErrStr_InDolphin]); break;
 		case HASH_MISMATCH:
 			ThrowError(errorStrings[ErrStr_BadFile]); break;
-//		case CANNOT_DOWNGRADE:
-//			printf("Error: cannot downgrade boot2\n"); break;
+		case CANNOT_DOWNGRADE:
+			printf("Error: cannot downgrade boot2\n"); break;
 		default:
 			ThrowErrorEx(errorStrings[ErrStr_Generic], ret); break;
 	}
@@ -88,7 +93,7 @@ void SDBootInstaller( void ) {
 void NANDBootInstaller( void ) {
 	SEEPROMClearStep();
 
-	HandleInstall(InstallNANDBoot(NANDBOOT_PATH, NANDBOOT_PAYLOAD_PATH), INSTALL_NAND_BOOT);	
+	HandleInstall(InstallNANDBoot(NANDBOOT_PATH, NANDBOOT_PAYLOAD_PATH), INSTALL_NAND_BOOT);
 	printf("\nPress any button to continue.");
 	WaitForPad();
 }
@@ -96,7 +101,7 @@ void NANDBootInstaller( void ) {
 void Boot2WADInstaller( void ) {	
 	printf("\n\n");
 
-	HandleInstall(InstallWADBoot2(BOOT2WAD_PATH), INSTALL_WAD);	
+	HandleInstall(InstallWADBoot2(BOOT2WAD_PATH), INSTALL_WAD);
 	printf("\nPress any button to continue.");
 	WaitForPad();
 }
@@ -104,7 +109,7 @@ void Boot2WADInstaller( void ) {
 void Boot2BackupInstaller( void ) {	
 	printf("\n\n");
 
-	HandleInstall(RestoreBoot2Blocks(BOOT2_BACKUP_PATH), INSTALL_BACKUP);	
+	HandleInstall(RestoreBoot2Blocks(BOOT2_BACKUP_PATH), INSTALL_BACKUP);
 	printf("\nPress any button to continue.");
 	WaitForPad();
 }
@@ -112,7 +117,24 @@ void Boot2BackupInstaller( void ) {
 void Boot2BackupMake( void ) {
 	printf("\n\n");
 
-	HandleInstall(BackupBoot2Blocks(BOOT2_BACKUP_PATH), MAKE_BOOT2_BACKUP);	
+	HandleInstall(BackupBoot2Blocks(BOOT2_BACKUP_PATH), MAKE_BOOT2_BACKUP);
 	printf("\nPress any button to continue.");
+	WaitForPad();
+}
+
+void RestoreNAND( void ){
+	printf("\nThis will first run in simulation mode. Press any key to continue.");
+	WaitForPad();
+	struct Simulation sim = flashFileSim("/nand.bin", 8, 4095);
+	if(sim.blocksStatus == NULL)
+		ThrowError(errorStrings[ErrStr_MissingFiles]);
+				
+	printf("\nPress A to continue, or any other button to go back to the menu\n");
+	
+	if(WaitForPad() != WPAD_BUTTON_A)
+		return;
+	
+	HandleInstall(flashFile("/nand.bin", 8, 4095, &sim), RESTORE_NAND_BACKUP);
+	printf("\nPress any key to continue.");
 	WaitForPad();
 }
