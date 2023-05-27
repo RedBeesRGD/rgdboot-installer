@@ -83,6 +83,11 @@ Wii:
 s32 IosPatch_AHBPROT(bool verbose);
 
 
+s32 Fix_ES_ImportBoot();
+s32 Enable_DevFlash();
+s32 Enable_DevBoot2();
+
+
 /**
  * This function applies patches on current IOS
  * @see Patchsets

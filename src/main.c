@@ -25,10 +25,7 @@ static void *xfb = NULL;
 static GXRModeObj *rmode = NULL;
 
 int main(int argc, char **argv) {
-	// This will reload to IOS36 while applying the required runtime patches
-	// It will enable access to /dev/flash and fix a bug with ES_ImportBoot
-	// TODO: Maybe try reloading to other IOSes as well (in case IOS36 is missing...)
-	s32 res = IosPatch_FULL(0, 36);
+	Fix_ES_ImportBoot();
 
 	VIDEO_Init();
 	WPAD_Init();

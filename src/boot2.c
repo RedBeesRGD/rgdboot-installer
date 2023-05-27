@@ -3,6 +3,7 @@
 // Uses the same method as the DOP-Mii boot2 installation routine
 #include "boot2.h"
 #include "flash.h"
+#include "runtimeiospatch.h"
 
 #define ALIGN(a,b) ((((a)+(b)-1)/(b))*(b))
 
@@ -238,6 +239,8 @@ s32 InstallNANDBoot(const char* filename, const char* payload){
 	s32 ret = InstallRawBoot2(filename);
 	if(ret < 0)
 		return ret;
+	
+	Enable_DevFlash();
 
 	ret = flashFile(payload, 2, 2, NULL);
 	if(ret < 0)

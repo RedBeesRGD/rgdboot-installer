@@ -38,15 +38,32 @@ static inline void disable_memory_protection(void) {
 static const u8 es_set_ahbprot_old[] = { 0x68, 0x5B, 0x22, 0xEC, 0x00, 0x52, 0x18, 0x9B, 0x68, 0x1B, 0x46, 0x98, 0x07, 0xDB };
 static const u8 es_set_ahbprot_patch[]   = { 0x01 };
 
-static const u8 es_importboot_old1[] = {0x4D, 0x18, 0xE0, 0x02};
-static const u8 es_importboot_new1[] = {0xBF, 0x00, 0xBF, 0x00};
 
-static const u8 es_importboot_old2[] = {0xD9, 0x00, 0x4E, 0x18};
-static const u8 es_importboot_new2[] = {0xE0, 0x00, 0xBF, 0x00};
+// These patches are required to fix a bug where ES_ImportBoot would
+// complain about being unable to downgrade boot2, even after
+// setting the boot2 version to zero. UNTESTED!!!
+static const u8 es_importboot_old1[] = {0x42, 0x9A, 0xE2, 0xB4};
+static const u8 es_importboot_new1[] = {0x42, 0x9A, 0xE0, 0x01};
+
+static const u8 es_importboot_old2[] = {0x42, 0x9A, 0xD9, 0x00};
+static const u8 es_importboot_new2[] = {0x42, 0x9A, 0xE0, 0x00};
+
+static const u8 es_importboot_old3[] = {0x4D, 0x18, 0xE0, 0x02};
+static const u8 es_importboot_new3[] = {0xBF, 0x00, 0xBF, 0x00};
+
 
 // Special thanks to nitr8 for the /dev/flash access patch!
+// This should work on IOSes that previously had /dev/flash access enabled
 static const u8 dev_flash_old[] = { 0xa7, 0x28, 0x00, 0xd1, 0x02, 0x23, 0x00 };
 static const u8 dev_flash_new[] = { 0xa7, 0x28, 0x00, 0xd1, 0x02, 0x23, 0x01 };
+
+// New /dev/flash patch that should work on every other IOS, by root1024
+// WARNING: this has the side effect of making /dev/boot2 inaccessible!
+static const u8 dev_flash_old1[] = { 0x66, 0x73, 0x00, 0x00, 0x62, 0x6f, 0x6f, 0x74, 0x32 };
+static const u8 dev_flash_new1[] = { 0x66, 0x73, 0x00, 0x00, 0x66, 0x6C, 0x61, 0x73, 0x68 };
+
+static const u8 dev_flash_old2[] = { 0xd0, 0x02, 0x20, 0x01, 0x42, 0x40, 0xe0, 0x08, 0xf7, 0xfa, 0xfc, 0xb7 };
+static const u8 dev_flash_new2[] = { 0xe0, 0x02, 0x20, 0x01, 0x42, 0x40, 0xe0, 0x08, 0xf7, 0xff, 0xfd, 0xeb };
 
 
 static u8 apply_patch(const char *name, const u8 *old, u32 old_size, const u8 *patch, size_t patch_size, u32 patch_offset, bool verbose) {
@@ -99,6 +116,47 @@ s32 IosPatch_AHBPROT(bool verbose) {
 	return ERROR_AHBPROT;
 }
 
+s32 Fix_ES_ImportBoot() {
+	s32 count = 0;
+
+	if (AHBPROT_DISABLED) {
+		disable_memory_protection();
+		count += apply_patch("ES_ImportBoot(1)", es_importboot_old1, sizeof(es_importboot_old1), es_importboot_new1, sizeof(es_importboot_new1), 0, false);
+		count += apply_patch("ES_ImportBoot(2)", es_importboot_old2, sizeof(es_importboot_old2), es_importboot_new2, sizeof(es_importboot_new2), 0, false);
+		count += apply_patch("ES_ImportBoot(3)", es_importboot_old3, sizeof(es_importboot_old3), es_importboot_new3, sizeof(es_importboot_new3), 0, false);
+		
+		return count;
+	}
+	return ERROR_AHBPROT;
+}
+
+s32 Enable_DevFlash() {
+	s32 count = 0;
+
+	if (AHBPROT_DISABLED) {
+		disable_memory_protection();
+		count += apply_patch("/dev/flash (old)", dev_flash_old, sizeof(dev_flash_old), dev_flash_new, sizeof(dev_flash_new), 0, false);
+		count += apply_patch("/dev/flash (new, part1)", dev_flash_old1, sizeof(dev_flash_old1), dev_flash_new1, sizeof(dev_flash_new1), 0, false);
+		count += apply_patch("/dev/flash (new, part2)", dev_flash_old2, sizeof(dev_flash_old2), dev_flash_new2, sizeof(dev_flash_new2), 0, false);
+		
+		return count;
+	}
+	return ERROR_AHBPROT;
+}
+
+s32 Enable_DevBoot2() {
+	s32 count = 0;
+
+	if (AHBPROT_DISABLED) {
+		disable_memory_protection();
+		count += apply_patch("undo /dev/flash (new, part1)", dev_flash_new1, sizeof(dev_flash_new1), dev_flash_old1, sizeof(dev_flash_old1), 0, false);
+		count += apply_patch("undo /dev/flash (new, part2)", dev_flash_new2, sizeof(dev_flash_new2), dev_flash_old2, sizeof(dev_flash_old2), 0, false);
+		
+		return count;
+	}
+	return ERROR_AHBPROT;
+}
+
 s32 IosPatch_RUNTIME(bool verbose) {
 	s32 count = 0;
 
@@ -113,7 +171,10 @@ s32 IosPatch_RUNTIME(bool verbose) {
 		}
 		count += apply_patch("ES_ImportBoot(1)", es_importboot_old1, sizeof(es_importboot_old1), es_importboot_new1, sizeof(es_importboot_new1), 0, verbose);
 		count += apply_patch("ES_ImportBoot(2)", es_importboot_old2, sizeof(es_importboot_old2), es_importboot_new2, sizeof(es_importboot_new2), 0, verbose);
-		count += apply_patch("/dev/flash", dev_flash_old, sizeof(dev_flash_old), dev_flash_new, sizeof(dev_flash_new), 0, verbose);
+		count += apply_patch("ES_ImportBoot(3)", es_importboot_old3, sizeof(es_importboot_old3), es_importboot_new3, sizeof(es_importboot_new3), 0, verbose);
+		count += apply_patch("/dev/flash (old)", dev_flash_old, sizeof(dev_flash_old), dev_flash_new, sizeof(dev_flash_new), 0, verbose);
+		count += apply_patch("/dev/flash (new, part1)", dev_flash_old1, sizeof(dev_flash_old1), dev_flash_new1, sizeof(dev_flash_new1), 0, verbose);
+		count += apply_patch("/dev/flash (new, part2)", dev_flash_old2, sizeof(dev_flash_old2), dev_flash_new2, sizeof(dev_flash_new2), 0, verbose);
 		
 		return count;
 	}

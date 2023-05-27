@@ -78,6 +78,7 @@ void SEEPROMClearStep( void ) {
 }
 
 void SDBootInstaller( void ) {
+	Enable_DevBoot2();
 	SEEPROMClearStep();
 	if(IsMini()) {
 		printf("Installing SDBoot on a Wii Mini could cause your system to be unusable due to the lack of an SD card slot.\n");
@@ -91,6 +92,7 @@ void SDBootInstaller( void ) {
 }
 
 void NANDBootInstaller( void ) {
+	Enable_DevBoot2();
 	SEEPROMClearStep();
 
 	HandleInstall(InstallNANDBoot(NANDBOOT_PATH, NANDBOOT_PAYLOAD_PATH), INSTALL_NAND_BOOT);
@@ -98,7 +100,8 @@ void NANDBootInstaller( void ) {
 	WaitForPad();
 }
 
-void Boot2WADInstaller( void ) {	
+void Boot2WADInstaller( void ) {
+	Enable_DevBoot2();
 	printf("\n\n");
 
 	HandleInstall(InstallWADBoot2(BOOT2WAD_PATH), INSTALL_WAD);
@@ -106,7 +109,8 @@ void Boot2WADInstaller( void ) {
 	WaitForPad();
 }
 
-void Boot2BackupInstaller( void ) {	
+void Boot2BackupInstaller( void ) {
+	Enable_DevBoot2();
 	printf("\n\n");
 
 	HandleInstall(RestoreBoot2Blocks(BOOT2_BACKUP_PATH), INSTALL_BACKUP);
@@ -115,6 +119,7 @@ void Boot2BackupInstaller( void ) {
 }
 
 void Boot2BackupMake( void ) {
+	Enable_DevFlash();
 	printf("\n\n");
 
 	HandleInstall(BackupBoot2Blocks(BOOT2_BACKUP_PATH), MAKE_BOOT2_BACKUP);
@@ -123,6 +128,8 @@ void Boot2BackupMake( void ) {
 }
 
 void RestoreNAND( void ){
+	Enable_DevFlash();
+	
 	printf("\nThis will first run in simulation mode. Press any key to continue.");
 	WaitForPad();
 	struct Simulation sim = flashFileSim("/nand.bin", 8, 4095);
