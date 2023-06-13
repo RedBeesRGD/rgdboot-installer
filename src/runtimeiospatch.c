@@ -42,14 +42,8 @@ static const u8 es_set_ahbprot_patch[]   = { 0x01 };
 // These patches are required to fix a bug where ES_ImportBoot would
 // complain about being unable to downgrade boot2, even after
 // setting the boot2 version to zero. UNTESTED!!!
-static const u8 es_importboot_old1[] = {0x42, 0x9A, 0xE2, 0xB4};
-static const u8 es_importboot_new1[] = {0x42, 0x9A, 0xE0, 0x01};
-
-static const u8 es_importboot_old2[] = {0x42, 0x9A, 0xD9, 0x00};
-static const u8 es_importboot_new2[] = {0x42, 0x9A, 0xE0, 0x00};
-
-static const u8 es_importboot_old3[] = {0x4D, 0x18, 0xE0, 0x02};
-static const u8 es_importboot_new3[] = {0xBF, 0x00, 0xBF, 0x00};
+static const u8 es_importboot_old[] = {0x68, 0x5a, 0x9b, 0x1e, 0x42, 0x9a, 0xd2, 0x01};
+static const u8 es_importboot_new[] = {0x68, 0x5a, 0x9b, 0x1e, 0x42, 0x9a, 0xe0, 0x01};
 
 
 // Special thanks to nitr8 for the /dev/flash access patch!
@@ -121,9 +115,7 @@ s32 Fix_ES_ImportBoot() {
 
 	if (AHBPROT_DISABLED) {
 		disable_memory_protection();
-		count += apply_patch("ES_ImportBoot(1)", es_importboot_old1, sizeof(es_importboot_old1), es_importboot_new1, sizeof(es_importboot_new1), 0, false);
-		count += apply_patch("ES_ImportBoot(2)", es_importboot_old2, sizeof(es_importboot_old2), es_importboot_new2, sizeof(es_importboot_new2), 0, false);
-		count += apply_patch("ES_ImportBoot(3)", es_importboot_old3, sizeof(es_importboot_old3), es_importboot_new3, sizeof(es_importboot_new3), 0, false);
+		count += apply_patch("ES_ImportBoot", es_importboot_old, sizeof(es_importboot_old), es_importboot_new, sizeof(es_importboot_new), 0, false);
 		
 		return count;
 	}
@@ -169,9 +161,7 @@ s32 IosPatch_RUNTIME(bool verbose) {
 			TextColor(6, 1);
 			printf("\t>> Applying standard Wii patches:\n");
 		}
-		count += apply_patch("ES_ImportBoot(1)", es_importboot_old1, sizeof(es_importboot_old1), es_importboot_new1, sizeof(es_importboot_new1), 0, verbose);
-		count += apply_patch("ES_ImportBoot(2)", es_importboot_old2, sizeof(es_importboot_old2), es_importboot_new2, sizeof(es_importboot_new2), 0, verbose);
-		count += apply_patch("ES_ImportBoot(3)", es_importboot_old3, sizeof(es_importboot_old3), es_importboot_new3, sizeof(es_importboot_new3), 0, verbose);
+		count += apply_patch("ES_ImportBoot", es_importboot_old, sizeof(es_importboot_old), es_importboot_new, sizeof(es_importboot_new), 0, verbose);
 		count += apply_patch("/dev/flash (old)", dev_flash_old, sizeof(dev_flash_old), dev_flash_new, sizeof(dev_flash_new), 0, verbose);
 		count += apply_patch("/dev/flash (new, part1)", dev_flash_old1, sizeof(dev_flash_old1), dev_flash_new1, sizeof(dev_flash_new1), 0, verbose);
 		count += apply_patch("/dev/flash (new, part2)", dev_flash_old2, sizeof(dev_flash_old2), dev_flash_new2, sizeof(dev_flash_new2), 0, verbose);
