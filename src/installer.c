@@ -33,6 +33,7 @@
 void HandleInstall(s32 ret, u8 installType) {
 	switch(ret){
 		case 0:
+		case -2009:
 			switch(installType){
 				case INSTALL_SD_BOOT:
 				case INSTALL_NAND_BOOT:
