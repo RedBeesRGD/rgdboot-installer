@@ -236,26 +236,20 @@ s32 InstallNANDBoot(const char* filename, const char* payload){
 			return HASH_MISMATCH;
 	}
 
-	s32 ret;
-/*
 	s32 ret = InstallRawBoot2(filename);
 	if(ret < 0)
 		return ret;
-*/
 	
 	Enable_DevFlash();
 
-	//ret = flashFile(payload, 2, 2, NULL);
-	ret = flashFile(payload, 1, 4, NULL);
+	ret = flashFile(payload, 2, 2, NULL);
 	if(ret < 0)
 		return ret;
 
 	// Erase blocks 3-6. No need to erase the boot2 backup copy
-/*
 	ret = eraseBlocks(3, 6);
 	if(ret < 0)
 		return ret;
-*/
 
 	return 0;
 }
