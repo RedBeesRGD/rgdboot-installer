@@ -16,7 +16,7 @@ u8 menuPosition = 0;
 void ClearScreen( void ) {
 	printf("\x1b[5;0H");
 	for(int i = 0; i < MenuStr_Count + 1; i++) {
-		printf("\33[2K\r\n");
+		printf("\20[2K\r\n");
 	}
 	printf("\x1b[4;0H");
 }
@@ -40,9 +40,9 @@ void EnterOption( void ) {
 		case MenuStr_MakeBoot2Backup:
 			Boot2BackupMake();
 			break;
-		case MenuStr_RestoreNANDBackup:
+/*		case MenuStr_RestoreNANDBackup:
 			RestoreNAND();
-			break;
+			break;*/
 /*		case MenuStr_Credits:
 			printf("\n\nApp Developers:\n       \x1b[32mroot1024\x1b[37m\n      \x1b31mRedBees\x1b[37m\n\nPayload Developers:\n         nitr8\n\nTesters:\n		\x1b[31mDeadlyFoez\x1b[37m\n\nUsing libruntimeiospatch by Nanolx\n\nAnd Wack0 for making it possible!");
 			break;*/
