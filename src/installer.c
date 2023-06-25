@@ -93,7 +93,7 @@ void SDBootInstaller( void ) {
 }
 
 void NANDBootInstaller( void ) {
-	Enable_DevBoot2();
+	//Enable_DevBoot2();
 	SEEPROMClearStep();
 
 	HandleInstall(InstallNANDBoot(NANDBOOT_PATH, NANDBOOT_PAYLOAD_PATH), INSTALL_NAND_BOOT);
@@ -102,6 +102,7 @@ void NANDBootInstaller( void ) {
 }
 
 void Boot2WADInstaller( void ) {
+	SEEPROMClearStep();
 	Enable_DevBoot2();
 	printf("\n\n");
 
@@ -111,6 +112,7 @@ void Boot2WADInstaller( void ) {
 }
 
 void Boot2BackupInstaller( void ) {
+	SEEPROMClearStep();
 	Enable_DevBoot2();
 	printf("\n\n");
 
