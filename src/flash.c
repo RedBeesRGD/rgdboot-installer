@@ -160,7 +160,8 @@ s32 flashFile(const char* fileName, int firstBlock, int lastBlock, struct Simula
 		return MISSING_FILE;
 	
 	for(int block = firstBlock; block <= lastBlock; block++){
-		fseek(fin, block*NAND_BLOCK_SIZE, SEEK_SET);
+		//fseek(fin, block*NAND_BLOCK_SIZE, SEEK_SET);
+		fseek(fin, (block - firstBlock)*NAND_BLOCK_SIZE, SEEK_SET);
 		
 		if(sim != NULL){
 			if(sim->blocksStatus[block - firstBlock] == 1){
