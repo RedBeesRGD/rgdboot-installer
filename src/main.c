@@ -26,6 +26,7 @@ static GXRModeObj *rmode = NULL;
 
 int main(int argc, char **argv) {
 	Fix_ES_ImportBoot();
+	Enable_DevFlash();
 
 	VIDEO_Init();
 	WPAD_Init();
