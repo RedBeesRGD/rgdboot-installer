@@ -222,7 +222,7 @@ s32 dumpPages(const char* fileName, int firstPage, int lastPage){
 }
 
 s32 dumpBlocks(const char* fileName, int firstBlock, int lastBlock){
-	return dumpPages(fileName, firstBlock*64, lastBlock*64-1);
+	return dumpPages(fileName, firstBlock*64, (lastBlock+1)*64-1);
 }
 
 s32 eraseBlocks(int firstBlock, int lastBlock){
