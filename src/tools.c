@@ -25,9 +25,9 @@ u32 WaitForPad() {
 		padButtons |= RGDSDB_PAD_BUTTON_UP;	// To prevent conflicts
 	}
 		
-//	u32 ret = 0;
-//	if(!wpadButtons) ret = padButtons;
-//	if(!padButtons) ret = wpadButtons;
+	u32 ret = 0;
+	if(!wpadButtons) ret = padButtons;
+	if(!padButtons) ret = wpadButtons;
 
 	return wpadButtons;
 }

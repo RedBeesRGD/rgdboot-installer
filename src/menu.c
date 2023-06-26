@@ -15,7 +15,7 @@ u8 menuPosition = 0;
 
 void ClearScreen( void ) {
 	printf("\x1b[5;0H");
-	for(int i = 0; i < MenuStr_Count + 1; i++) {
+	for(int i = 0; i < MenuStr_Count + 15; i++) {
 		printf("\33[2K\r\n");
 	}
 	printf("\x1b[4;0H");
@@ -99,15 +99,15 @@ u8 EnterMenu( void ) {
 
 	while(1) {
 		switch(WaitForPad()) {
-//			case RGDSDB_PAD_BUTTON_UP:
+			case RGDSDB_PAD_BUTTON_UP:
 			case WPAD_BUTTON_UP:
 				Move(UP);
 				break;
-//			case PAD_BUTTON_DOWN:
+			case PAD_BUTTON_DOWN:
 			case WPAD_BUTTON_DOWN:
 				Move(DOWN);
 				break;
-//			case PAD_BUTTON_A:
+			case PAD_BUTTON_A:
 			case WPAD_BUTTON_A:
 				EnterOption();
 				break;
