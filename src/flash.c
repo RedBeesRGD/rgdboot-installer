@@ -25,6 +25,12 @@ s32 __isPageEmpty(u8* data){
 	return (!memcmp(data, emptyPage, NAND_PAGE_SIZE));
 }
 
+s32 __isBlockBad(){
+	s32 rv;
+	rv = IOS_Ioctl(fd, 4, NULL, 0, NULL, 0); // Is this block bad?
+	return (rv == BAD_BLOCK);
+}
+
 s32 __readPage(u8* data, int pageno){
 	static unsigned char buffer[NAND_PAGE_SIZE] __attribute__ ((aligned(32)));
 	int rv;
@@ -61,8 +67,7 @@ s32 __eraseBlock(int blockno){
 	if (rv < 0)
 		return SEEK_ERROR;
 
-	rv = IOS_Ioctl(fd, 4, NULL, 0, NULL, 0); // Is this block bad?
-	if(rv == BAD_BLOCK)
+	if(__isBlockBad())
 		return BAD_BLOCK;
 	
 	rv = IOS_Ioctl(fd, 3, NULL, 0, NULL, 0); // Erase block
@@ -117,9 +122,8 @@ struct Simulation __simulateWrite(const char* fileName, int firstBlock, int last
 		sim.blocksStatus[block - firstBlock] = 0;
 		
 		IOS_Seek(fd, block * 64, 0);
-		rv = IOS_Ioctl(fd, 4, NULL, 0, NULL, 0); // Is this block bad?
 		
-		if(rv == BAD_BLOCK){
+		if(__isBlockBad()){ // Is this block bad?
 			printf("bad\n");
 			sim.blocksStatus[block - firstBlock] = 2;
 			continue;
@@ -231,4 +235,23 @@ s32 eraseBlocks(int firstBlock, int lastBlock){
 		__eraseBlock(block);
 	}
 	return 0;
+}
+
+u32 checkBlocks(int firstBlock, int lastBlock){
+	u32 badBlocks = 0;
+
+	for(int block = firstBlock; block <= lastBlock; block++){
+		printf(" [+] Checking block %d... ", block);
+		
+		IOS_Seek(fd, block * 64, 0);
+		
+		if(__isBlockBad()){
+			badBlocks++;
+			printf("BAD!!! :(\n");
+		}
+		else
+			printf("good\n");
+	}
+	
+	return badBlocks;
 }

@@ -21,5 +21,6 @@ struct Simulation flashFileSim(const char* fileName, int firstBlock, int lastBlo
 s32 dumpPages(const char* fileName, int firstPage, int lastPage);
 s32 dumpBlocks(const char* fileName, int firstBlock, int lastBlock);
 s32 eraseBlocks(int firstBlock, int lastBlock);
+u32 checkBlocks(int firstBlock, int lastBlock);
 
 #endif
