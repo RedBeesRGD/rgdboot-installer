@@ -3,6 +3,7 @@
 * Implement bad block checking
 * SD file hash checks
 * Fix build on latest toolchain
+* Set boot2 version in seeprom to 0 after boot2 wad installation
 
 -- UI --
 - New UI (images/maybe GUI)
