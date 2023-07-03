@@ -1,0 +1,8 @@
+-- Refinements/Bugs --
+
+* Implement bad block checking
+* SD file hash checks
+* Fix build on latest toolchain
+
+-- UI --
+- New UI (images/maybe GUI)
