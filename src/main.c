@@ -55,7 +55,9 @@ int main(int argc, char **argv) {
 	if(!AHBPROT_DISABLED) { 
 		ThrowError(errorStrings[ErrStr_NeedPerms]);
 	}
-	NANDFlashInit();
+	if(NANDFlashInit() < 0){
+		ThrowError(errorStrings[ErrStr_DevFlashErr]);
+	}
 
 	printf("RGD SDBoot Installer v%u.%u - by \x1b[32mroot1024\x1b[37m, \x1b[31mRedBees\x1b[37m, \x1b[31mDeadlyFoez\x1b[37m\nraregamingdump.ca", RGDSDB_VER_MAJOR, RGDSDB_VER_MINOR);
 	printf("\nCurrent boot2 version: %i", GetBoot2Version());
