@@ -4,6 +4,8 @@
 #include "flash.h"
 #include "tools.h"
 
+u32 nand_min_block = 0;
+
 s32 fd = -1;
 
 s32 NANDFlashInit(){
@@ -46,6 +48,9 @@ s32 __readPage(u8* data, int pageno){
 }
 
 s32 __flashPage(u8* data, int pageno){
+	if(pageno/64 < nand_min_block)
+		return 0;
+	
 	static unsigned char buffer[NAND_PAGE_SIZE] __attribute__ ((aligned(32)));
 	int rv;
 	
@@ -61,6 +66,9 @@ s32 __flashPage(u8* data, int pageno){
 }
 
 s32 __eraseBlock(int blockno){
+	if(blockno < nand_min_block)
+		return 0;
+	
 	int rv;
 	
 	rv = IOS_Seek(fd, blockno * 64, 0);
@@ -78,6 +86,9 @@ s32 __eraseBlock(int blockno){
 }
 
 s32 __flashBlock(u8* data, int blockno){
+	if(blockno < nand_min_block)
+		return 0;
+	
 	int rv;
 	u8* nandPage = (u8*)malloc(NAND_PAGE_SIZE);
 	
@@ -117,9 +128,12 @@ struct Simulation __simulateWrite(const char* fileName, int firstBlock, int last
 	}
 	
 	for(int block = firstBlock; block <= lastBlock; block++){
-		printf(" [+] Analyzing block %d... ", block);
-		
 		sim.blocksStatus[block - firstBlock] = 0;
+		
+		if(block < nand_min_block)
+			continue;
+		
+		printf(" [+] Analyzing block %d... ", block);
 		
 		IOS_Seek(fd, block * 64, 0);
 		
@@ -164,6 +178,9 @@ s32 flashFile(const char* fileName, int firstBlock, int lastBlock, struct Simula
 		return MISSING_FILE;
 	
 	for(int block = firstBlock; block <= lastBlock; block++){
+		if(block < nand_min_block)
+			continue;
+		
 		//fseek(fin, block*NAND_BLOCK_SIZE, SEEK_SET);
 		fseek(fin, (block - firstBlock)*NAND_BLOCK_SIZE, SEEK_SET);
 		
@@ -254,4 +271,8 @@ u32 checkBlocks(int firstBlock, int lastBlock){
 	}
 	
 	return badBlocks;
+}
+
+void setMinBlock(u32 blockno){
+	nand_min_block = blockno;
 }

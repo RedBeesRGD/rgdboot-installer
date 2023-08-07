@@ -23,4 +23,6 @@ s32 dumpBlocks(const char* fileName, int firstBlock, int lastBlock);
 s32 eraseBlocks(int firstBlock, int lastBlock);
 u32 checkBlocks(int firstBlock, int lastBlock);
 
+void setMinBlock(u32 blockno);
+
 #endif

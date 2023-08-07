@@ -132,10 +132,11 @@ void Boot2BackupMake( void ) {
 
 void RestoreNAND( void ){
 	Enable_DevFlash();
+	setMinBlock(8);
 	
 	printf("\nThis will first run in simulation mode. Press any key to continue.");
 	WaitForPad();
-	struct Simulation sim = flashFileSim("/nand.bin", 8, 4095);
+	struct Simulation sim = flashFileSim("/nand.bin", 0, 4095);
 	if(sim.blocksStatus == NULL)
 		ThrowError(errorStrings[ErrStr_MissingFiles]);
 				
@@ -144,7 +145,8 @@ void RestoreNAND( void ){
 	if(WaitForPad() != WPAD_BUTTON_A)
 		return;
 	
-	HandleInstall(flashFile("/nand.bin", 8, 4095, &sim), RESTORE_NAND_BACKUP);
+	HandleInstall(flashFile("/nand.bin", 0, 4095, &sim), RESTORE_NAND_BACKUP);
+	setMinBlock(0);
 	printf("\nPress any key to continue.");
 	WaitForPad();
 }
