@@ -79,8 +79,6 @@ int CheckFile(FILE* fp, const char *filename){
 }
 
 int CheckFileHash(const char *filename, u8 expectedHash[], int expectedSize){
-	return 0;
-
 	FILE *fp = fopen(filename, "rb");
 	int bytesread;
 
