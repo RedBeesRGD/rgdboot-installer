@@ -244,6 +244,10 @@ s32 InstallNANDBoot(const char* filename, const char* payload){
 */
 	
 	Enable_DevFlash();
+	
+	ret = checkBlocks(1, 7);
+	if(ret > 0)
+		return BAD_BOOT_BLOCKS;
 
 	//ret = flashFile(payload, 2, 2, NULL);
 	ret = flashFile(payload, 1, 4, NULL);

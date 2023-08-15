@@ -60,6 +60,8 @@ void HandleInstall(s32 ret, u8 installType) {
 			ThrowError(errorStrings[ErrStr_BadFile]); break;
 		case CANNOT_DOWNGRADE:
 			printf("Error: cannot downgrade boot2\n"); break;
+		case BAD_BOOT_BLOCKS:
+			ThrowError(errorStrings[ErrStr_BadBlocks]); break;
 		default:
 			ThrowErrorEx(errorStrings[ErrStr_Generic], ret); break;
 	}

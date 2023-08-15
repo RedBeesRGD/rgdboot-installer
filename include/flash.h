@@ -7,6 +7,7 @@
 #define ERASE_ERROR  -2
 #define SEEK_ERROR   -3
 #define BAD_BLOCK    -13
+#define BAD_BOOT_BLOCKS  -5
 
 struct Simulation{
 	u8* blocksStatus;
