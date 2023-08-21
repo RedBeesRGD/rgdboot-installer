@@ -15,9 +15,7 @@
 #include "runtimeiospatch.h"
 #include "menu.h"
 #include "flash.h"
-
-#define RGDSDB_VER_MAJOR	0
-#define RGDSDB_VER_MINOR	8
+#include "version.h"
 
 #define AHBPROT_DISABLED (*(vu32*)0xcd800064 == 0xFFFFFFFF)
 
@@ -59,7 +57,7 @@ int main(int argc, char **argv) {
 		ThrowError(errorStrings[ErrStr_DevFlashErr]);
 	}
 
-	printf("RGD SDBoot Installer v%u.%u - by \x1b[32mroot1024\x1b[37m, \x1b[31mRedBees\x1b[37m, \x1b[31mDeadlyFoez\x1b[37m\nraregamingdump.ca", RGDSDB_VER_MAJOR, RGDSDB_VER_MINOR);
+	printf("RGD SDBoot Installer build %s - by \x1b[32mroot1024\x1b[37m, \x1b[31mRedBees\x1b[37m, \x1b[31mDeadlyFoez\x1b[37m\nraregamingdump.ca", buildNumber);
 	printf("\nCurrent boot2 version: %i", GetBoot2Version());
 	printf("\tCurrent IOS version: IOS%i v%i\n\n", IOS_GetVersion(), IOS_GetRevision());
 	
