@@ -63,7 +63,27 @@ int main(int argc, char **argv) {
 	printf("\nCurrent boot2 version: %i", GetBoot2Version());
 	printf("\tCurrent IOS version: IOS%i v%i\n\n", IOS_GetVersion(), IOS_GetRevision());
 	
-	EnterMenu();
+	printf("\nWARNING: PLEASE READ THIS CAREFULLY!\n\n");
+	printf("THIS IS BETA SOFTWARE. AS SUCH, IT CARRIES A HIGH RISK OF BRICKING THE CONSOLE.\n\n");
+	printf("THIS TOOL DIRECTLY WRITES TO BOOT1 AND BOOT2.\n\n");
+	printf("IT'S ADVISED YOU USE THIS TOOL ONLY IF YOU HAVE AN EXTERNAL NAND PROGRAMMER.\n\n");
+	printf("BY CONTINUING, YOU ACCEPT THAT YOU USE THIS PROGRAM AT YOUR OWN RISK.\n\n");
+	printf("THE AUTHORS CANNOT BE HELD RESPONSIBLE TO ANY DAMAGE THIS TOOL MAY CAUSE.\n\n");
+	printf("IF YOU DON'T AGREE TO THESE TERMS, PLEASE QUIT THIS PROGRAM IMMEDIATELY.\n\n\n");
+
+	printf("Press (+) to continue, or (-) to quit the program and return to HBC.\n");
+
+	while(1) {
+		switch(WaitForPad()) {
+			//case RGDSDB_PAD_BUTTON_PLUS:
+			case WPAD_BUTTON_PLUS:
+				EnterMenu();
+				return 0;
+			//case RGDSDB_PAD_BUTTON_MINUS:
+			case WPAD_BUTTON_MINUS:
+				return 1;
+		}
+	}
 
 	return 0; // NOT REACHED HERE
 }
