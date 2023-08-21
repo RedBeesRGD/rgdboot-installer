@@ -75,6 +75,7 @@ int main(int argc, char **argv) {
 		switch(WaitForPad()) {
 			//case RGDSDB_PAD_BUTTON_PLUS:
 			case WPAD_BUTTON_PLUS:
+				ClearScreen();
 				EnterMenu();
 				return 0;
 			//case RGDSDB_PAD_BUTTON_MINUS:
