@@ -110,7 +110,7 @@ export OUTPUT	:=	$(CURDIR)/$(TARGET)
 #---------------------------------------------------------------------------------
 buildNumber = $(shell git rev-list --count HEAD)
 $(BUILD):
-	@echo "static char *buildNumber = \"$(buildNumber)\"" > $(INCLUDES)/version.h
+	@echo "static char *buildNumber = \"$(buildNumber)\";" > $(INCLUDES)/version.h
 	@[ -d $@ ] || mkdir -p $@
 	@$(MAKE) --no-print-directory -C $(BUILD) -f $(CURDIR)/Makefile
 
