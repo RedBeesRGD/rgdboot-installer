@@ -1,2 +1,3 @@
 build/
 rgdboot-installer*
+include/version.h
