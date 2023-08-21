@@ -22,20 +22,10 @@ DATA		:=	data
 INCLUDES	:=	include
 
 #---------------------------------------------------------------------------------
-# export revision
-#---------------------------------------------------------------------------------
-
-buildNumber = $(shell git rev-list --count HEAD)
-#$(shell printf \"aaaaa$(buildNumber)\")
-all:
-	@echo "static char *buildNumber = \"$(buildNumber)\"" > $(INCLUDES)/version.h
-
-#---------------------------------------------------------------------------------
 # options for code generation
 #---------------------------------------------------------------------------------
 
-
-CFLAGS	= -O2 -Wall $(MACHDEP) $(INCLUDE) -DNO_DOLPHIN_CHECK
+CFLAGS	= -O2 -Wall $(MACHDEP) $(INCLUDE) -DDOLPHIN_CHECK
 
 ifdef NO_DOLPHIN_CHECK
 	CFLAGS	= -O2 -Wall $(MACHDEP) $(INCLUDE)
