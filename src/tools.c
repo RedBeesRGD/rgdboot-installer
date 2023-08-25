@@ -29,7 +29,7 @@ u32 WaitForPad() {
 	if(!wpadButtons) ret = padButtons;
 	if(!padButtons) ret = wpadButtons;
 
-	return wpadButtons;
+	return ret;
 }
 
 u8 IsWiiU( void ) {
