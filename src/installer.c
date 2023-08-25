@@ -116,7 +116,7 @@ void Boot2WADInstaller( void ) {
 
 void Boot2BackupInstaller( void ) {
 	SEEPROMClearStep();
-	Enable_DevBoot2();
+	Enable_DevFlash();
 	printf("\n\n");
 
 	HandleInstall(RestoreBoot2Blocks(BOOT2_BACKUP_PATH), INSTALL_BACKUP);
