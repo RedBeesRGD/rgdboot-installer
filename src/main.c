@@ -69,17 +69,19 @@ int main(int argc, char **argv) {
 	printf("THE AUTHORS CANNOT BE HELD RESPONSIBLE TO ANY DAMAGE THIS TOOL MAY CAUSE.\n\n");
 	printf("IF YOU DON'T AGREE TO THESE TERMS, PLEASE QUIT THIS PROGRAM IMMEDIATELY.\n\n\n");
 
-	printf("Press (+) to continue, or (-) to quit the program and return to HBC.\n");
+	printf("Press (+/A) to continue, or (-/Y) to quit the program and return to HBC.\n");
 
 	while(1) {
 		switch(WaitForPad()) {
 			//case RGDSDB_PAD_BUTTON_PLUS:
 			case WPAD_BUTTON_PLUS:
+			case PAD_BUTTON_A:
 				ClearScreen();
 				EnterMenu();
 				return 0;
 			//case RGDSDB_PAD_BUTTON_MINUS:
 			case WPAD_BUTTON_MINUS:
+			case PAD_BUTTON_B:
 				return 1;
 		}
 	}
