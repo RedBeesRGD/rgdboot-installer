@@ -109,6 +109,7 @@ void Boot2WADInstaller( void ) {
 	printf("\n\n");
 
 	HandleInstall(InstallWADBoot2(BOOT2WAD_PATH), INSTALL_WAD);
+	ClearVersion();
 	printf("\nPress any button to continue.");
 	WaitForPad();
 }
@@ -119,6 +120,7 @@ void Boot2BackupInstaller( void ) {
 	printf("\n\n");
 
 	HandleInstall(RestoreBoot2Blocks(BOOT2_BACKUP_PATH), INSTALL_BACKUP);
+	ClearVersion();
 	printf("\nPress any button to continue.");
 	WaitForPad();
 }
