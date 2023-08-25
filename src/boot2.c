@@ -109,71 +109,19 @@ boot2 *ReadBoot2(const char *filename){
 		return ReadBoot2NonECC(filename);  
 	}
 	
-	u8 pageCount = filelen / RAWBOOT2SIZE * 0x40;
-	
-	boot2 *b2 = (boot2 *)malloc(sizeof(boot2));
-	u8 *pages = (u8 *)malloc(PAGESIZE * pageCount);
-	u8 *singlePage = (u8 *)malloc(PAGESIZE);
-	u8 pageIndex = 0;
-	
-	while(!feof(fp)){ // REMOVE ECC
-		fread(singlePage, 1, PAGESIZE, fp);
-		for(int i=0; i<PAGESIZE; i++)
-			pages[PAGESIZE*pageIndex+i] = singlePage[i];
-		fread(singlePage, 1, 0x40, fp); // Ignore ECC
-		pageIndex++;
-	}
-	
 	FILE *out = fopen("/boot2/boot2_noecc.bin", "wb"); // Write output file without ECC
-	fwrite(pages, 1, PAGESIZE * pageCount, out);
-	fclose(out);
+	u8 *page  = (u8 *)malloc(PAGESIZE+0x40);
+	u32 pages = filelen / RAWBOOT2SIZE * 0x40;
 	
-	fp = fopen("/boot2/boot2_noecc.bin", "rb");
-	if(!CheckFile(fp, "/boot2/boot2_noecc.bin")){ // Read file without ECC
-		printf("Something went wrong... Aborting\n");
-		WaitExit();
+	for(int i=0; i<pages; i++){
+		fread(page, 1, PAGESIZE+0x40, fp);
+		fwrite(page, 1, PAGESIZE, out);
 	}
-		
-	fread(b2, 1, 0x14, fp);             // Get headerLen, dataOffset, certsLen etc
-	fseek(fp, b2->headerLen, SEEK_SET); // Skip to 0x20
-	
-	b2->certs   = (certificates *)malloc(sizeof(certificates));
-	b2->tik     = (signed_blob *)alloc(b2->tikLen);
-	b2->TMD     = (signed_blob *)alloc(b2->TMDLen);
-	
-	b2->certs->ca_cert = (signed_blob *)alloc(CACERTSIZE);
-	b2->certs->cp_cert = (signed_blob *)alloc(CPCERTSIZE);
-	b2->certs->xs_cert = (signed_blob *)alloc(XSCERTSIZE);
-	
-	fread(b2->certs->ca_cert, 1, CACERTSIZE, fp); // Using hardcoded sizes for CA, CP and XS
-	fread(b2->certs->cp_cert, 1, CPCERTSIZE, fp);
-	fread(b2->certs->xs_cert, 1, XSCERTSIZE, fp);
-	fread(b2->tik, 1, b2->tikLen,   fp);
-	fread(b2->TMD, 1, b2->TMDLen,   fp);
-	
-	b2->contentSize = ALIGN(b2->TMD[0x7C], 16); // Align to 16
-	// Address 0x7C (0x1F0, unaligned) of TMD contains content size
-
-	b2->certs->tik_cert = (signed_blob *)alloc(CACERTSIZE + XSCERTSIZE);
-	memcpy(b2->certs->tik_cert, b2->certs->xs_cert, XSCERTSIZE);
-	memcpy(((u8*)(b2->certs->tik_cert)) + XSCERTSIZE, b2->certs->ca_cert, CACERTSIZE);
-	// Ticket Cert = XS + CA (concatenated)
-	
-	b2->certs->TMD_cert = (signed_blob *)alloc(CACERTSIZE + CPCERTSIZE);
-	memcpy(b2->certs->TMD_cert, b2->certs->cp_cert, CPCERTSIZE);
-	memcpy(((u8*)(b2->certs->TMD_cert)) + CPCERTSIZE, b2->certs->ca_cert, CACERTSIZE);
-	// TMD Cert = CP + CA (concatenated)
-
-	b2->content = (u8 *)alloc(b2->contentSize);
-	fseek(fp, b2->dataOffset, SEEK_SET);
-	fread(b2->content, 1, b2->contentSize, fp);
 	
 	fclose(fp);
-
-	free(pages);
-	free(singlePage);
-	
-	return b2;
+	fclose(out);
+		
+	return ReadBoot2NonECC("/boot2/boot2_noecc.bin");
 }
 
 s32 InstallRawBoot2(const char* filename){
