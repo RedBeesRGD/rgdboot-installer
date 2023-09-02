@@ -18,6 +18,7 @@ typedef enum {
 	MenuStr_InstallBoot2WAD,
 	MenuStr_InstallBoot2Backup,
 	MenuStr_MakeBoot2Backup,
+	MenuStr_BootSysCheck,
 	MenuStr_RestoreNANDBackup,
 	MenuStr_Credits,
 	MenuStr_Exit,
@@ -30,6 +31,7 @@ static const char *menuStrings[MenuStr_Count] = {
 	"Install a boot2 WAD",
 	"Install a boot2 backup",
 	"Perform a boot2 backup",
+	"Boot SysCheck",
 	"Restore a NAND backup",
 	"View Credits",
 	"Exit to HBC"

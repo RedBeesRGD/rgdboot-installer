@@ -33,4 +33,7 @@ u32 checkBlocks(int firstBlock, int lastBlock);
 
 void setMinBlock(u32 blockno);
 
+char identifyBoot1();
+Boot2Block identifyBoot2(u8 copy);
+
 #endif

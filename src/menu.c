@@ -40,6 +40,9 @@ void EnterOption( void ) {
 		case MenuStr_MakeBoot2Backup:
 			Boot2BackupMake();
 			break;
+		case MenuStr_BootSysCheck:
+			BootSysCheck();
+			break;
 /*		case MenuStr_RestoreNANDBackup:
 			RestoreNAND();
 			break;*/

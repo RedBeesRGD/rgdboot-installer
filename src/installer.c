@@ -154,3 +154,34 @@ void RestoreNAND( void ){
 	printf("\nPress any key to continue.");
 	WaitForPad();
 }
+
+void BootSysCheck(){
+	Enable_DevFlash();
+	
+	char boot1Version = identifyBoot1();
+	Boot2Block boot2Block;
+	u8 boot2BlockNumbers[6] = {1,2,3,4,7,6};
+	
+	printf(" [+] Boot1 version: boot1%c\n\n", boot1Version);
+	
+	printf(" [+] Boot2 versions: \n\n");
+	
+	for(int i=0; i<3; i++){
+		boot2Block = identifyBoot2(i);
+		
+		if(boot2Block.blockSize == 0)
+			continue;
+		
+		if(boot2Block.blockSize == 1)
+			printf("   [-] block %d: ", boot2BlockNumbers[i*2]);
+		else
+			printf("   [-] blocks %d-%d: ", boot2BlockNumbers[i*2], boot2BlockNumbers[i*2+1]);
+		
+		printf("%s %s\n", boot2Block.version, boot2Block.bootMiiVer);
+	}
+	
+	checkBlocks(1,7);
+	
+	printf("\nPress any key to continue.");
+	WaitForPad();
+}
