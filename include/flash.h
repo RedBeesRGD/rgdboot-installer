@@ -14,12 +14,12 @@ struct Simulation{
 	int toBeWritten;
 };
 
-struct Boot2Block{
-	char *version;
+typedef struct{
+	char version[10];
 	bool isBootMii;
-	char *bootMiiVer;
+	char bootMiiVer[4];
 	u8 blockSize;
-}
+} Boot2Block;
 
 s32 NANDFlashInit();
 void NANDFlashClose();
