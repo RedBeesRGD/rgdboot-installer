@@ -381,6 +381,7 @@ Boot2Block identifyBoot2(u8 copy){
 	else if(nandPage[1654] == 0x42 && nandPage[1655] == 0x4D){    // "BM"
 		strcpy(boot2Block.version,    "BootMii");
 		strncpy(boot2Block.bootMiiVer, nandPage+1656, 3);   // e.g. "1.1"
+		boot2Block.bootMiiVer[3] = '\0';
 		boot2Block.isBootMii = true;
 		boot2Block.blockSize = (nandPage[1615] > 0) ? 2 : 1; // boot2 version
 	}
