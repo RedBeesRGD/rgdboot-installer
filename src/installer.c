@@ -195,7 +195,12 @@ void EraseNANDFS(){
 	for(int i=0; i<3; i++){
 		boot2Block = identifyBoot2(i);
 		
-		if(boot2Block.version == 0){
+		if(!strcmp(boot2Block.version, "sdboot")){
+			hasBoot2V0 = true;
+			break;
+		}
+		
+		if(!strcmp(boot2Block.version, "nandboot")){
 			hasBoot2V0 = true;
 			break;
 		}
