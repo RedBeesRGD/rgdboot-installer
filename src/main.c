@@ -56,6 +56,11 @@ int main(int argc, char **argv) {
 	if(NANDFlashInit() < 0){
 		ThrowError(errorStrings[ErrStr_DevFlashErr]);
 	}
+	
+	bool enableDebug = false;
+	if(argc == 1)
+		enableDebug = (strcmp(argv[0], "debug") == 0) ? true : false;
+	
 
 	printf("RGD SDBoot Installer build %s - by \x1b[32mroot1024\x1b[37m, \x1b[31mRedBees\x1b[37m, \x1b[31mDeadlyFoez\x1b[37m\nraregamingdump.ca", buildNumber);
 	printf("\nCurrent boot2 version: %i", GetBoot2Version());
@@ -77,7 +82,7 @@ int main(int argc, char **argv) {
 			case WPAD_BUTTON_PLUS:
 			case PAD_BUTTON_A:
 				ClearScreen();
-				EnterMenu();
+				EnterMenu(enableDebug);
 				return 0;
 			//case RGDSDB_PAD_BUTTON_MINUS:
 			case WPAD_BUTTON_MINUS:

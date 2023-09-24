@@ -25,6 +25,11 @@ typedef enum {
 	MenuStr_Count	// Number of values supported by this enum.
 } MenuStr;
 
+typedef enum {
+	DebugMenuStr_InstallSDBoot = 0,
+	DebugMenuStr_Count	// Number of values supported by this enum.
+} DebugMenuStr;
+
 static const char *menuStrings[MenuStr_Count] = {
 	"Install SDBoot",
 	"Install NANDBoot",
@@ -37,11 +42,17 @@ static const char *menuStrings[MenuStr_Count] = {
 	"Exit to HBC"
 };
 
+static const char *debugMenuStrings[DebugMenuStr_Count] = {
+	"Erase NAND blocks 8-4095"
+};
+
+static bool enableDebugMenu = false;
+
 void ClearScreen( void );
 void EnterOption( void );
 void PrintCursor( void );
 void Move(u8 direction);
 void PrintMenu( void );
-u8 EnterMenu( void );
+u8 EnterMenu( bool enableDebug );
 
 #endif

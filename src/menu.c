@@ -74,10 +74,10 @@ void Move(u8 direction) {
 		if(menuPosition > 0) {
 			menuPosition--;
 		} else {
-			menuPosition = MenuStr_Count - 1;
+			menuPosition = MenuStr_Count + DebugMenuStr_Count * enableDebugMenu - 1;
 		}
 	}  else if (direction == DOWN) {
-		if(menuPosition < MenuStr_Count - 1) {
+		if(menuPosition < MenuStr_Count + DebugMenuStr_Count * enableDebugMenu - 1) {
 			menuPosition++;
 		} else {
 			menuPosition = 0;
@@ -93,10 +93,16 @@ void PrintMenu( void ) {
 	for(int i = 0; i < MenuStr_Count; i++) {
 		printf("   %s\n", menuStrings[i]);
 	}
+	if(enableDebugMenu)
+		for(int i = 0; i < DebugMenuStr_Count; i++) {
+			printf("   DEBUG - %s\n", debugMenuStrings[i]);
+		}
 	printf("\x1b[2;0H");
 }
 
-u8 EnterMenu( void ) {
+u8 EnterMenu( bool enableDebug ) {
+	enableDebugMenu = enableDebug;
+
 	PrintMenu();	
 	PrintCursor();
 
