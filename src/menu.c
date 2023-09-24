@@ -14,7 +14,7 @@
 u8 menuPosition = 0;
 
 void ClearScreen( void ) {
-	printf("\x1b[5;0H");
+	printf("\x1b[6;0H");
 	for(int i = 0; i < MenuStr_Count + 15; i++) {
 		printf("\33[2K\r\n");
 	}
@@ -63,7 +63,7 @@ void EnterOption( void ) {
 }
 
 void PrintCursor( void ) {
-	u8 location = menuPosition + 6;
+	u8 location = menuPosition + 8;
         printf("\x1b[%i;0H", location);
         printf("%s", CURSOR);
         printf("\x1b[2;0H");
@@ -89,7 +89,7 @@ void Move(u8 direction) {
 }
 
 void PrintMenu( void ) {
-	printf("\x1b[6;0H");
+	printf("\x1b[8;0H");
 	for(int i = 0; i < MenuStr_Count; i++) {
 		printf("   %s\n", menuStrings[i]);
 	}
@@ -97,7 +97,7 @@ void PrintMenu( void ) {
 		for(int i = 0; i < DebugMenuStr_Count; i++) {
 			printf("   DEBUG - %s\n", debugMenuStrings[i]);
 		}
-	printf("\x1b[2;0H");
+	printf("\x1b[4;0H");
 }
 
 u8 EnterMenu( bool enableDebug ) {
