@@ -28,6 +28,8 @@ u32 WaitForPad() {
 	u32 ret = 0;
 	if(!wpadButtons) ret = padButtons;
 	if(!padButtons) ret = wpadButtons;
+	
+	VIDEO_WaitVSync();
 
 	return ret;
 }
