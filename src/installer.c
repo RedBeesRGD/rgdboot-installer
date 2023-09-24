@@ -185,3 +185,29 @@ void BootSysCheck(){
 	printf("\nPress any key to continue.");
 	WaitForPad();
 }
+
+void EraseNANDFS(){
+	Enable_DevFlash();
+
+	bool hasBoot2V0 = false;
+	Boot2Block boot2Block;
+
+	for(int i=0; i<3; i++){
+		boot2Block = identifyBoot2(i);
+		
+		if(boot2Block.version == 0){
+			hasBoot2V0 = true;
+			break;
+		}
+	}
+	
+	if(!hasBoot2V0)
+		printf("ERROR: you must have either sdboot or nandboot to erase the NAND!\n");
+	
+	else
+		eraseBlocks(8, 4095);
+	
+	
+	printf("\nPress any key to continue.");
+	WaitForPad();
+}

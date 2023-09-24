@@ -26,7 +26,7 @@ typedef enum {
 } MenuStr;
 
 typedef enum {
-	DebugMenuStr_InstallSDBoot = 0,
+	DebugMenuStr_EraseNANDFS = MenuStr_Count,
 	DebugMenuStr_Count	// Number of values supported by this enum.
 } DebugMenuStr;
 

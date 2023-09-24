@@ -18,7 +18,7 @@ void ClearScreen( void ) {
 	for(int i = 0; i < MenuStr_Count + 15; i++) {
 		printf("\33[2K\r\n");
 	}
-	printf("\x1b[4;0H");
+	printf("\x1b[6;0H");
 }
 
 void EnterOption( void ) {
@@ -52,6 +52,9 @@ void EnterOption( void ) {
 		case MenuStr_Exit:
 			exit(0);
 			break;
+		case DebugMenuStr_EraseNANDFS:
+			EraseNANDFS();
+			break;
 		default:
 			printf("\n\nThis doesn't work yet.");
 			WaitForPad();
@@ -74,10 +77,10 @@ void Move(u8 direction) {
 		if(menuPosition > 0) {
 			menuPosition--;
 		} else {
-			menuPosition = MenuStr_Count + DebugMenuStr_Count * enableDebugMenu - 1;
+			menuPosition = MenuStr_Count + (DebugMenuStr_Count - MenuStr_Count) * enableDebugMenu - 1;
 		}
 	}  else if (direction == DOWN) {
-		if(menuPosition < MenuStr_Count + DebugMenuStr_Count * enableDebugMenu - 1) {
+		if(menuPosition < MenuStr_Count + (DebugMenuStr_Count - MenuStr_Count) * enableDebugMenu - 1) {
 			menuPosition++;
 		} else {
 			menuPosition = 0;
@@ -94,7 +97,7 @@ void PrintMenu( void ) {
 		printf("   %s\n", menuStrings[i]);
 	}
 	if(enableDebugMenu)
-		for(int i = 0; i < DebugMenuStr_Count; i++) {
+		for(int i = 0; i < DebugMenuStr_Count - MenuStr_Count; i++) {
 			printf("   DEBUG - %s\n", debugMenuStrings[i]);
 		}
 	printf("\x1b[4;0H");
