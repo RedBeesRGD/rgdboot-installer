@@ -58,9 +58,8 @@ int main(int argc, char **argv) {
 	}
 	
 	bool enableDebug = false;
-	if(argc == 1)
-		enableDebug = (strcmp(argv[0], "debug") == 0) ? true : false;
-	
+	if(argc == 2)
+		enableDebug = (strcmp(argv[1], "debug") == 0) ? true : false;
 
 	printf("RGD SDBoot Installer build %s - by \x1b[32mroot1024\x1b[37m, \x1b[31mRedBees\x1b[37m, \x1b[31mDeadlyFoez\x1b[37m\nraregamingdump.ca", buildNumber);
 	printf("\nCurrent boot2 version: %i", GetBoot2Version());
