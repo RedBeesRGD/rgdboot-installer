@@ -34,7 +34,7 @@ static const char *menuStrings[MenuStr_Count] = {
 	"Install SDBoot",
 	"Install NANDBoot",
 	"Install a boot2 WAD",
-	"Install a boot2 backup",
+	"Restore a boot2 backup",
 	"Perform a boot2 backup",
 	"Boot SysCheck",
 	"Restore a NAND backup",
