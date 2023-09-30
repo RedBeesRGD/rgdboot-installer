@@ -174,10 +174,10 @@ s32 InstallNANDBoot(const char* filename, const char* payload){
 	// Let's check if the payload hash is correct ...
 	// It's not a good idea to install nandboot without a non-functional payload :)
 
-	// a8c7865b628588ccfd2db2179cb4e509f1ae33ca731f8a87f267c07108110d65
+	// 59d220c80c4aa7159e71a699ec3785d5669a479be2699264c1d482d944651525
 	
-	u8 expectedHash[] = {0xA8,0xC7,0x86,0x5B,0x62,0x85,0x88,0xCC,0xFD,0x2D,0xB2,0x17,0x9C,0xB4,0xE5,0x09,0xF1,0xAE,0x33,0xCA,0x73,0x1F,0x8A,0x87,0xF2,0x67,0xC0,0x71,0x08,0x11,0x0D,0x65};
-	int k = CheckFileHash(payload, expectedHash, 4*RAWBOOT2SIZE);
+	u8 expectedHash[] = {0x59,0xD2,0x20,0xC8,0x0C,0x4A,0xA7,0x15,0x9E,0x71,0xA6,0x99,0xEC,0x37,0x85,0xD5,0x66,0x9A,0x47,0x9B,0xE2,0x69,0x92,0x64,0xC1,0xD4,0x82,0xD9,0x44,0x65,0x15,0x25};
+	int k = CheckFileHash(payload, expectedHash, 3*RAWBOOT2SIZE);
 
 	if(k){
 		if(k == 2)
@@ -185,30 +185,30 @@ s32 InstallNANDBoot(const char* filename, const char* payload){
 		else
 			return HASH_MISMATCH;
 	}
-
-	s32 ret;
-/*
-	s32 ret = InstallRawBoot2(filename);
-	if(ret < 0)
-		return ret;
-*/
 	
-	Enable_DevFlash();
-	
-	ret = checkBlocks(1, 7);
+	//ret = checkBlocks(1, 7);
+	s32 ret = checkBlocks(2, 4);
 	if(ret > 0)
 		return BAD_BOOT_BLOCKS;
-
+	
+	
+	Enable_DevBoot2();
+	ret = InstallRawBoot2(filename);
+	if(ret < 0)
+		return ret;
+	
+	
+	Enable_DevFlash();
 	//ret = flashFile(payload, 2, 2, NULL);
-	ret = flashFile(payload, 1, 4, NULL);
+	ret = flashFile(payload, 2, 4, NULL);
 	if(ret < 0)
 		return ret;
 
 	// Erase blocks 3-6. No need to erase the boot2 backup copy
 
-	ret = eraseBlocks(5, 7);
+	/*ret = eraseBlocks(5, 7);
 	if(ret < 0)
-		return ret;
+		return ret;*/
 
 	return 0;
 }
