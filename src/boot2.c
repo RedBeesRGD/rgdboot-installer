@@ -194,6 +194,12 @@ s32 InstallNANDBoot(const char* filename, const char* payload){
 		return BAD_BOOT_BLOCKS;
 	
 	
+	// Erase boot2 blocks before calling ES_ImportBoot
+	ret = eraseBlocks(1, 7);
+	if(ret < 0)
+		return ret;
+		
+	
 	Enable_DevBoot2();
 	ret = InstallRawBoot2(filename);
 	if(ret < 0)
