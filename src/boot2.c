@@ -186,37 +186,28 @@ s32 InstallNANDBoot(const char* filename, const char* payload){
 			return HASH_MISMATCH;
 	}*/
 	
-	
+	// Enable /dev/flash access (disabling /dev/boot2)
 	Enable_DevFlash();
-	//ret = checkBlocks(1, 7);
-	s32 ret = checkBlocks(2, 4);
+	
+	// Check if blocks are good before flashing
+	s32 ret = checkBlocks(1, 4);
 	if(ret > 0)
 		return BAD_BOOT_BLOCKS;
-	
-	
-	// Erase boot2 blocks before calling ES_ImportBoot
-	ret = eraseBlocks(1, 7);
-	if(ret < 0)
-		return ret;
 		
-	
-	Enable_DevBoot2();
-	ret = InstallRawBoot2(filename);
+	// Flash nandboot
+	ret = flashFile(filename, 1, 1, NULL);
 	if(ret < 0)
 		return ret;
 	
-	
-	Enable_DevFlash();
-	//ret = flashFile(payload, 2, 2, NULL);
+	// Flash payload
 	ret = flashFile(payload, 2, 4, NULL);
 	if(ret < 0)
 		return ret;
 
-	// Erase blocks 3-6. No need to erase the boot2 backup copy
-
-	/*ret = eraseBlocks(5, 7);
+	// Erase boot2 backup copy
+	ret = eraseBlocks(5, 7);
 	if(ret < 0)
-		return ret;*/
+		return ret;
 
 	return 0;
 }
