@@ -16,16 +16,12 @@
 #include "menu.h"
 #include "flash.h"
 #include "version.h"
-
-#define AHBPROT_DISABLED (*(vu32*)0xcd800064 == 0xFFFFFFFF)
+#include "haxx.h"
 
 static void *xfb = NULL;
 static GXRModeObj *rmode = NULL;
 
 int main(int argc, char **argv) {
-	Fix_ES_ImportBoot();
-	Enable_DevFlash();
-
 	VIDEO_Init();
 	WPAD_Init();
 	PAD_Init();
@@ -42,6 +38,16 @@ int main(int argc, char **argv) {
 	
 	printf("\x1b[2;0H");
 	
+	// Get Bus Access (disable AHBPROT)
+	Haxx_GetBusAccess();
+	
+	if(!AHBPROT_DISABLED) { 
+		ThrowError(errorStrings[ErrStr_NeedPerms]);
+	}
+	
+	Fix_ES_ImportBoot();
+	Enable_DevFlash();
+	
 	if(IsDolphin()) {
 		ThrowError(errorStrings[ErrStr_InDolphin]);
 	} else if(IsWiiU()) {
@@ -49,9 +55,6 @@ int main(int argc, char **argv) {
 	}
 	if(!fatInitDefault()){
 		ThrowError(errorStrings[ErrStr_SDCard]);
-	}
-	if(!AHBPROT_DISABLED) { 
-		ThrowError(errorStrings[ErrStr_NeedPerms]);
 	}
 	if(NANDFlashInit() < 0){
 		ThrowError(errorStrings[ErrStr_DevFlashErr]);
