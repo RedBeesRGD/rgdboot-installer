@@ -38,6 +38,10 @@ static inline void disable_memory_protection(void) {
 static const u8 es_set_ahbprot_old[] = { 0x68, 0x5B, 0x22, 0xEC, 0x00, 0x52, 0x18, 0x9B, 0x68, 0x1B, 0x46, 0x98, 0x07, 0xDB };
 static const u8 es_set_ahbprot_patch[]   = { 0x01 };
 
+// The good old Trucha Bug!!!
+static const u8 hash_old[] = { 0x20, 0x07, 0x23, 0xA2 };
+static const u8 hash_patch[] = { 0x00 };
+static const u8 new_hash_old[] = { 0x20, 0x07, 0x4B, 0x0B };
 
 // These patches are required to fix a bug where ES_ImportBoot would
 // complain about being unable to downgrade boot2, even after
@@ -143,6 +147,18 @@ s32 Enable_DevBoot2() {
 		disable_memory_protection();
 		count += apply_patch("undo /dev/flash (new, part1)", dev_flash_new1, sizeof(dev_flash_new1), dev_flash_old1, sizeof(dev_flash_old1), 0, false);
 		count += apply_patch("undo /dev/flash (new, part2)", dev_flash_new2, sizeof(dev_flash_new2), dev_flash_old2, sizeof(dev_flash_old2), 0, false);
+		
+		return count;
+	}
+	return ERROR_AHBPROT;
+}
+
+s32 Restore_Trucha() {
+	s32 count = 0;
+
+	if (AHBPROT_DISABLED) {
+		disable_memory_protection();
+		count += apply_patch("new_hash_check", new_hash_old, sizeof(new_hash_old), hash_patch, sizeof(hash_patch), 0, false);
 		
 		return count;
 	}
