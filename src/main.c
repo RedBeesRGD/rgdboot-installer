@@ -56,10 +56,11 @@ int main(int argc, char **argv) {
 	if(!fatInitDefault()){
 		ThrowError(errorStrings[ErrStr_SDCard]);
 	}
-/*	if(NANDFlashInit() < 0){
+	#ifndef NO_DOLPHIN_CHECK
+	if(NANDFlashInit() < 0){
 		ThrowError(errorStrings[ErrStr_DevFlashErr]);
-	}*/
-	
+	}
+	#endif
 	bool enableDebug = false;
 	if(argc == 2)
 		enableDebug = (strcmp(argv[1], "debug") == 0) ? true : false;
