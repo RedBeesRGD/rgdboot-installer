@@ -16,6 +16,7 @@
 #include "menu.h"
 #include "installer.h"
 #include "flash.h"
+#include "hbc.h"
 
 #define SDBOOT_PATH           "/boot2/sdboot.bin"
 #define NANDBOOT_PATH         "/boot2/nandboot.bin"
@@ -23,12 +24,19 @@
 #define BOOT2WAD_PATH         "/boot2/boot2.wad"
 #define BOOT2_BACKUP_PATH     "/boot2/backup.bin"
 
+#include "hbc/hbc_content0.h"
+#include "hbc/hbc_content1.h"
+#include "hbc/hbc_certs.h"
+#include "hbc/hbc_tik.h"
+#include "hbc/hbc_tmd.h"
+
 #define INSTALL_SD_BOOT   0
 #define INSTALL_NAND_BOOT 1
 #define INSTALL_WAD       2
 #define INSTALL_BACKUP    3
 #define MAKE_BOOT2_BACKUP 4
 #define RESTORE_NAND_BACKUP 5
+#define INSTALL_HBC 6
 
 void HandleInstall(s32 ret, u8 installType) {
 	switch(ret){
@@ -51,6 +59,8 @@ void HandleInstall(s32 ret, u8 installType) {
 				case RESTORE_NAND_BACKUP:
 					printf("NAND backup was restored successfully!\n");
 					break;
+				case INSTALL_HBC:
+					printf("HBC installation was performed successfully!\n");
 			} break;
 		case MISSING_FILE:
 			ThrowError(errorStrings[ErrStr_MissingFiles]); break;
@@ -99,6 +109,12 @@ void NANDBootInstaller( void ) {
 	SEEPROMClearStep();
 
 	HandleInstall(InstallNANDBoot(NANDBOOT_PATH, NANDBOOT_PAYLOAD_PATH), INSTALL_NAND_BOOT);
+	printf("\nPress any button to continue.");
+	WaitForPad();
+}
+
+void HBCInstaller( void ) {
+	HandleInstall(InstallHBC(), INSTALL_HBC);
 	printf("\nPress any button to continue.");
 	WaitForPad();
 }

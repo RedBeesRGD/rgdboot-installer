@@ -56,9 +56,9 @@ int main(int argc, char **argv) {
 	if(!fatInitDefault()){
 		ThrowError(errorStrings[ErrStr_SDCard]);
 	}
-	if(NANDFlashInit() < 0){
+/*	if(NANDFlashInit() < 0){
 		ThrowError(errorStrings[ErrStr_DevFlashErr]);
-	}
+	}*/
 	
 	bool enableDebug = false;
 	if(argc == 2)

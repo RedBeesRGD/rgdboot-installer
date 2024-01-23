@@ -31,6 +31,9 @@ void EnterOption( void ) {
 		case MenuStr_InstallNANDBoot:
 			NANDBootInstaller();
 			break;
+		case MenuStr_InstallHBC:
+			HBCInstaller();
+			break;
 		case MenuStr_InstallBoot2WAD:
 			Boot2WADInstaller();
 			break;

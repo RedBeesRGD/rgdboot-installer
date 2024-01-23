@@ -15,6 +15,7 @@
 typedef enum {
 	MenuStr_InstallSDBoot = 0,
 	MenuStr_InstallNANDBoot,
+	MenuStr_InstallHBC,
 	MenuStr_InstallBoot2WAD,
 	MenuStr_InstallBoot2Backup,
 	MenuStr_MakeBoot2Backup,
@@ -33,6 +34,7 @@ typedef enum {
 static const char *menuStrings[MenuStr_Count] = {
 	"Install SDBoot",
 	"Install NANDBoot",
+	"Install HBC",
 	"Install a boot2 WAD",
 	"Restore a boot2 backup",
 	"Perform a boot2 backup",

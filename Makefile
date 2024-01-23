@@ -29,13 +29,13 @@ CFLAGS	= -O2 -Wall $(MACHDEP) $(INCLUDE) -DDOLPHIN_CHECK
 
 ifdef NO_DOLPHIN_CHECK
 	CFLAGS	= -O2 -Wall $(MACHDEP) $(INCLUDE)
-	TARGET = sdboot-installer_noDolphinCheck
+	TARGET = rgdboot-installer_noDolphinCheck
 endif
 
 # Skipping the version clear will cause a brick on Wiis with a boot2 version higher than 0 - use for testing if you have a flash programmer only
 ifdef NO_VERSION_CLEAR
 	CFLAGS = -O2 -Wall $(MACHDEP) $(INCLUDE) -DNO_VERSION_CLEAR
-	TARGET = sdboot-installer_noVersionClear
+	TARGET = rgdboot-installer_noVersionClear
 endif
 
 CXXFLAGS	=	$(CFLAGS)
@@ -118,7 +118,7 @@ $(BUILD):
 clean:
 	@echo clean ...
 	@rm -fr $(BUILD) $(OUTPUT).elf $(OUTPUT).dol
-	@rm -fr $(BUILD) $(OUTPUT)_noDolphinCheck.elf $(OUTPUT)_noDolphinCheck.dol
+	@rm -fr $(BUILD) rgdboot-installer_noDolphinCheck.elf rgdboot-installer_noDolphinCheck.dol
 
 #---------------------------------------------------------------------------------
 run:
