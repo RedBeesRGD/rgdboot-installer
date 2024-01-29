@@ -158,6 +158,7 @@ s32 Restore_Trucha() {
 
 	if (AHBPROT_DISABLED) {
 		disable_memory_protection();
+		count += apply_patch("hash_check", hash_old, sizeof(hash_old), hash_patch, sizeof(hash_patch), 0, false);
 		count += apply_patch("new_hash_check", new_hash_old, sizeof(new_hash_old), hash_patch, sizeof(hash_patch), 0, false);
 		
 		return count;
