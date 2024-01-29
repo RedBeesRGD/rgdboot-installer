@@ -90,6 +90,9 @@ s32 InstallHBC( void ) {
 	
 	ret = ES_AddTitleFinish();
 	printf("ES_AddTitleFinish returned: %d\n", ret);
+
+	if(contentBuffer != NULL)
+		free(contentBuffer);
 	
 	WaitForPad();
 	return ret;
