@@ -47,6 +47,7 @@ int main(int argc, char **argv) {
 	
 	Fix_ES_ImportBoot();
 	Enable_DevFlash();
+	Restore_Trucha();
 	
 	if(IsDolphin()) {
 		ThrowError(errorStrings[ErrStr_InDolphin]);
