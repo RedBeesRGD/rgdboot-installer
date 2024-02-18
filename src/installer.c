@@ -99,7 +99,11 @@ void SDBootInstaller( void ) {
 		WaitForPad();
 	}
 	
-	HandleInstall(InstallSDBoot(SDBOOT_PATH), INSTALL_SD_BOOT);
+	printf("Please select the file you want to install... ");
+	WaitForPad();
+	char* sdboot_path = FileSelect("/");
+	
+	HandleInstall(InstallSDBoot(sdboot_path), INSTALL_SD_BOOT);
 	printf("\nPress any button to continue.");
 	WaitForPad();
 }
@@ -107,8 +111,16 @@ void SDBootInstaller( void ) {
 void NANDBootInstaller( void ) {
 	//Enable_DevBoot2();
 	SEEPROMClearStep();
+	
+	printf("Please select the file you want to install... ");
+	WaitForPad();
+	char* nandboot_path = FileSelect("/");
+	
+	printf("Please select the payload you want to install... ");
+	WaitForPad();
+	char* nandboot_payload_path = FileSelect("/");
 
-	HandleInstall(InstallNANDBoot(NANDBOOT_PATH, NANDBOOT_PAYLOAD_PATH), INSTALL_NAND_BOOT);
+	HandleInstall(InstallNANDBoot(nandboot_path, nandboot_payload_path), INSTALL_NAND_BOOT);
 	printf("\nPress any button to continue.");
 	WaitForPad();
 }
@@ -123,8 +135,12 @@ void Boot2WADInstaller( void ) {
 	SEEPROMClearStep();
 	Enable_DevBoot2();
 	printf("\n\n");
+	
+	printf("Please select the WAD you want to install... ");
+	WaitForPad();
+	char* boot2wad_path = FileSelect("/");
 
-	HandleInstall(InstallWADBoot2(BOOT2WAD_PATH), INSTALL_WAD);
+	HandleInstall(InstallWADBoot2(boot2wad_path), INSTALL_WAD);
 	SEEPROMClearStep();
 	printf("\nPress any button to continue.");
 	WaitForPad();
@@ -134,8 +150,12 @@ void Boot2BackupInstaller( void ) {
 	SEEPROMClearStep();
 	Enable_DevFlash();
 	printf("\n\n");
+	
+	printf("Please select the boot2 backup you want to restore... ");
+	WaitForPad();
+	char* boot2_backup_path = FileSelect("/");
 
-	HandleInstall(RestoreBoot2Blocks(BOOT2_BACKUP_PATH), INSTALL_BACKUP);
+	HandleInstall(RestoreBoot2Blocks(boot2_backup_path), INSTALL_BACKUP);
 	SEEPROMClearStep();
 	printf("\nPress any button to continue.");
 	WaitForPad();
@@ -154,9 +174,13 @@ void RestoreNAND( void ){
 	Enable_DevFlash();
 	setMinBlock(8);
 	
+	printf("Please select the NAND you want to restore... ");
+	WaitForPad();
+	char* nand_backup_path = FileSelect("/");
+	
 	printf("\nThis will first run in simulation mode. Press any key to continue.");
 	WaitForPad();
-	struct Simulation sim = flashFileSim("/nand.bin", 0, 4095);
+	struct Simulation sim = flashFileSim(nand_backup_path, 0, 4095);
 	if(sim.blocksStatus == NULL)
 		ThrowError(errorStrings[ErrStr_MissingFiles]);
 				
@@ -165,7 +189,7 @@ void RestoreNAND( void ){
 	if(WaitForPad() != WPAD_BUTTON_A)
 		return;
 	
-	HandleInstall(flashFile("/nand.bin", 0, 4095, &sim), RESTORE_NAND_BACKUP);
+	HandleInstall(flashFile(nand_backup_path, 0, 4095, &sim), RESTORE_NAND_BACKUP);
 	setMinBlock(0);
 	printf("\nPress any key to continue.");
 	WaitForPad();
