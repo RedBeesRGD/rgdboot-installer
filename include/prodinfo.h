@@ -1,8 +1,19 @@
 /* RGD SDBoot Installer */
 
-#ifndef PRODINFO_H_
-#define PRODINFO_H_
+#ifndef _PRODINFO_H__
+#define _PRODINFO_H__
 
-extern u8 IsMini( void );
-
+/* [nitr8]: Added */
+#ifdef __cplusplus
+extern "C" {
 #endif
+
+extern u8 IsMini(void);
+
+/* [nitr8]: Added */
+#ifdef __cplusplus
+}
+#endif /* __cplusplus */
+
+#endif /* __PRODINFO_H__ */
+

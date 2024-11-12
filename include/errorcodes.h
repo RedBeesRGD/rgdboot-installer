@@ -1,10 +1,29 @@
 /* RGD SDBoot Installer */
 
-#ifndef ERRORCODES_H_
-#define ERRORCODES_H_
+#ifndef __ERRORCODES_H__
+#define __ERRORCODES_H__
 
-#define ALL_OK 0
+#define ALL_OK               0
 
+/* [nitr8]: Moved error codes here */
+#define MISSING_FILE        -1
+#define ERASE_ERROR         -2
+#define SEEK_ERROR          -3
+#define BOOT2_DOLPHIN       -4
+#define BAD_BOOT_BLOCKS     -5
+
+/* [nitr8]: Added */
+#define ALLOC_ERROR         -6
+
+/* [nitr8]: Added */
+#define READ_LENGTH_ERROR   -7
+
+#define BAD_BLOCK           -13
+#define HASH_MISMATCH       -1022
+#define CANNOT_DOWNGRADE    -1031
+
+/* [nitr8]: Moved to new file "errorstrings.h" */
+#if 0
 typedef enum {
 	ErrStr_NeedPerms = 0,
 	ErrStr_InDolphin,
@@ -19,10 +38,10 @@ typedef enum {
 	ErrStr_MissingFiles,
 	ErrStr_BadBlocks,
 	ErrStr_Generic,
-	ErrStr_Count	// Number of values supported by this enum.
+	ErrStr_Count	/* Number of values supported by this enum. */
 } ErrStr;
 
-static const char *errorStrings[ErrStr_Count] = {
+const char *errorStrings[ErrStr_Count] = {
 	"AHBPROT is enabled, so the RGD SDBoot Installer can't run properly. To fix this, make sure that you are running the RGD SDBoot Installer\nfrom the Homebrew Channel with the correct meta.xml file in the same folder on your SD card, or from Wiiload.",
 	"The RGD SDBoot Installer cannot run in Dolphin, as it relies on hardware\nfeatures which Dolphin does not emulate.\n\nThis can be bypassed with the compiler flag -NO_DOLPHIN_CHECK\nfor testing purposes.",
 	"The RGD SDBoot Installer cannot run on a Wii U, as\ninstalling a custom boot2 has no effect on the Wii U.",
@@ -37,5 +56,7 @@ static const char *errorStrings[ErrStr_Count] = {
 	"Unfortunately, there is at least one bad block present in the boot2 area.\nFor safety reasons, RGDBoot Installer cannot install NANDBoot...",
 	"Error code:"
 };
-
 #endif
+
+#endif /* __ERRORCODES_H__ */
+

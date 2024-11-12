@@ -1,8 +1,32 @@
 /* RGD SDBoot Installer */
 
-#ifndef SEEPROM_H_
-#define SEEPROM_H_
+#ifndef __SEEPROM_H__
+#define __SEEPROM_H__
 
-void ClearVersion();
-
+/* [nitr8]: Added */
+#ifdef __cplusplus
+extern "C" {
 #endif
+
+/* [nitr8]: Added */
+int SEEPROMClearStep(void);
+
+/* [nitr8]: Added */
+int SEEPROMBackupVersion(void);
+
+/* [nitr8]: Added */
+int SEEPROMRestoreVersion(void);
+
+/* [nitr8]: Added */
+int SEEPROMCompareVersion(int state);
+
+/* [nitr8]: Added */
+int SEEPROMClearVersion(void);
+
+/* [nitr8]: Added */
+#ifdef __cplusplus
+}
+#endif /* __cplusplus */
+
+#endif /* __SEEPROM_H__ */
+

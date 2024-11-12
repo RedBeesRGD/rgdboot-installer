@@ -1,0 +1,172 @@
+#---------------------------------------------------------------------------------
+# Clear the implicit built in rules
+#---------------------------------------------------------------------------------
+.SUFFIXES:
+#---------------------------------------------------------------------------------
+ifeq ($(strip $(DEVKITPPC)),)
+$(error "Please set DEVKITPPC in your environment. export DEVKITPPC=<path to>devkitPPC")
+endif
+
+include $(DEVKITPPC)/wii_rules
+
+#---------------------------------------------------------------------------------
+# TARGET_DEBUG is the name of the output
+# BUILD_DEBUG is the directory where object files & intermediate files will be placed
+# SOURCES is a list of directories containing source code
+# INCLUDES is a list of directories containing extra header files
+#---------------------------------------------------------------------------------
+
+# [nitr8]: change this to "boot"
+#TARGET_DEBUG		:=	$(notdir $(CURDIR))
+TARGET_DEBUG		:=	boot_debug
+
+BUILD_DEBUG		:=	build_debug
+SOURCES		:=	src src/hbc src/jpeglib
+DATA		:=	data
+INCLUDES	:=	include
+
+#---------------------------------------------------------------------------------
+# options for code generation
+#---------------------------------------------------------------------------------
+
+# [nitr8]: be really aggressive, so add this - then fix even more compiler warnings
+#WARNPLUS = -Wpedantic
+
+# [nitr8]: be more specific, so add this - then fix even more compiler warnings
+WARNFLAGS = -Wextra $(WARNPLUS)
+
+CFLAGS	=  -g -O0 -Wall $(WARNFLAGS) $(MACHDEP) $(INCLUDE) -DDOLPHIN_CHECK -D_DEBUG
+
+ifdef NO_DOLPHIN_CHECK
+	CFLAGS	= -g -O0 -Wall $(WARNFLAGS) $(MACHDEP) $(INCLUDE) -D_DEBUG
+	TARGET_DEBUG = rgdboot-installer_noDolphinCheck
+endif
+
+# Skipping the version clear will cause a brick on Wiis with a boot2 version higher than 0 - use for testing if you have a flash programmer only
+ifdef NO_VERSION_CLEAR
+	CFLAGS = -g -O0 -Wall $(WARNFLAGS) $(MACHDEP) $(INCLUDE) -DNO_VERSION_CLEAR -D_DEBUG
+	TARGET_DEBUG = rgdboot-installer_noVersionClear
+endif
+
+CXXFLAGS	=	$(CFLAGS)
+
+LDFLAGS	=	$(MACHDEP) -Wl,-Map,$(notdir $@).map
+
+#---------------------------------------------------------------------------------
+# any extra libraries we wish to link with the project
+#---------------------------------------------------------------------------------
+
+# [nitr8]: Add support for realtime debugging using a USB-Gecko (libdb) */
+#LIBS	:=	-lfat -lwiiuse -lbte -logc -lm
+LIBS	:=	-lfat -lwiiuse -lbte -logc -ldb -lm
+
+#---------------------------------------------------------------------------------
+# list of directories containing libraries, this must be the top level containing
+# include and lib
+#---------------------------------------------------------------------------------
+LIBDIRS	:=
+
+#---------------------------------------------------------------------------------
+# no real need to edit anything past this point unless you need to add additional
+# rules for different file extensions
+#---------------------------------------------------------------------------------
+ifneq ($(BUILD_DEBUG),$(notdir $(CURDIR)))
+#---------------------------------------------------------------------------------
+
+export OUTPUT_DEBUG	:=	$(CURDIR)/$(TARGET_DEBUG)
+
+export VPATH	:=	$(foreach dir,$(SOURCES),$(CURDIR)/$(dir)) \
+					$(foreach dir,$(DATA),$(CURDIR)/$(dir))
+
+export DEPSDIR	:=	$(CURDIR)/$(BUILD_DEBUG)
+
+#---------------------------------------------------------------------------------
+# automatically build a list of object files for our project
+#---------------------------------------------------------------------------------
+CFILES		:=	$(foreach dir,$(SOURCES),$(notdir $(wildcard $(dir)/*.c)))
+CPPFILES	:=	$(foreach dir,$(SOURCES),$(notdir $(wildcard $(dir)/*.cpp)))
+sFILES		:=	$(foreach dir,$(SOURCES),$(notdir $(wildcard $(dir)/*.s)))
+SFILES		:=	$(foreach dir,$(SOURCES),$(notdir $(wildcard $(dir)/*.S)))
+BINFILES	:=	$(foreach dir,$(DATA),$(notdir $(wildcard $(dir)/*.*)))
+
+#---------------------------------------------------------------------------------
+# use CXX for linking C++ projects, CC for standard C
+#---------------------------------------------------------------------------------
+ifeq ($(strip $(CPPFILES)),)
+	export LD	:=	$(CC)
+else
+	export LD	:=	$(CXX)
+endif
+
+export OFILES_BIN	:=	$(addsuffix .o,$(BINFILES))
+export OFILES_SOURCES := $(CPPFILES:.cpp=.o) $(CFILES:.c=.o) $(sFILES:.s=.o) $(SFILES:.S=.o)
+export OFILES := $(OFILES_BIN) $(OFILES_SOURCES)
+
+export HFILES := $(addsuffix .h,$(subst .,_,$(BINFILES)))
+
+#---------------------------------------------------------------------------------
+# build a list of include paths
+#---------------------------------------------------------------------------------
+export INCLUDE	:=	$(foreach dir,$(INCLUDES), -iquote $(CURDIR)/$(dir)) \
+					$(foreach dir,$(LIBDIRS),-I$(dir)/include) \
+					-I$(CURDIR)/$(BUILD_DEBUG) \
+					-I$(LIBOGC_INC) \
+					-iquote $(CURDIR)/$(INCLUDES)/hbc \
+					-iquote $(CURDIR)/$(INCLUDES)/jpeglib
+
+#---------------------------------------------------------------------------------
+# build a list of library paths
+#---------------------------------------------------------------------------------
+export LIBPATHS	:= -L$(LIBOGC_LIB) $(foreach dir,$(LIBDIRS),-L$(dir)/lib)
+
+export OUTPUT_DEBUG	:=	$(CURDIR)/$(TARGET_DEBUG)
+.PHONY: $(BUILD_DEBUG) clean_debug
+
+#---------------------------------------------------------------------------------
+#buildNumber = $(shell git rev-list --count HEAD)
+# [nitr8]: get rid of warnings when variables are not used at all
+$(BUILD_DEBUG):
+#	@echo "static char *buildNumber = \"$(buildNumber)\";" > $(INCLUDES)/version.h
+#	@echo "char *buildNumber = \"$(buildNumber)\";" > $(INCLUDES)/version.h
+
+	@gcc -s -Os -Wall -Wextra -o buildnumber buildNumber.cpp
+	@./buildnumber $(INCLUDES)/version.h
+	@[ -d $@ ] || mkdir -p $@
+	@$(MAKE) --no-print-directory -C $(BUILD_DEBUG) -f $(CURDIR)/Makefile_Debug
+
+#---------------------------------------------------------------------------------
+clean_debug:
+	@echo clean_debug ...
+	@rm -fr $(BUILD_DEBUG) $(OUTPUT_DEBUG).elf
+	@rm -fr $(BUILD_DEBUG) rgdboot-installer_noDolphinCheck.elf
+
+#---------------------------------------------------------------------------------
+run_debug:
+	wiiload $(TARGET_DEBUG).elf
+	
+
+#---------------------------------------------------------------------------------
+else
+
+DEPENDS	:=	$(OFILES:.o=.d)
+
+#---------------------------------------------------------------------------------
+# main targets
+#---------------------------------------------------------------------------------
+$(OUTPUT_DEBUG).elf: $(OFILES)
+
+$(OFILES_SOURCES) : $(HFILES)
+
+#---------------------------------------------------------------------------------
+# This rule links in binary data with the .jpg extension
+#---------------------------------------------------------------------------------
+%.jpg.o	%_jpg.h :	%.jpg
+#---------------------------------------------------------------------------------
+	@echo $(notdir $<)
+	$(bin2o)
+
+-include $(DEPENDS)
+
+#---------------------------------------------------------------------------------
+endif
+#---------------------------------------------------------------------------------

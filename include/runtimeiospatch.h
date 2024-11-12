@@ -1,18 +1,20 @@
-// This program is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, version 2.0.
+/* RGD SDBoot Installer */
 
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License 2.0 for more details.
+/* This program is free software: you can redistribute it and/or modify
+   it under the terms of the GNU General Public License as published by
+   the Free Software Foundation, version 2.0.
 
-// Copyright (C) 2010		Joseph Jordan <joe.ftpii@psychlaw.com.au>
-// Copyright (C) 2012-2013	damysteryman
-// Copyright (C) 2012-2015	Christopher Bratusek <nano@jpberlin.de>
-// Copyright (C) 2013		DarkMatterCore
-// Copyright (C) 2014		megazig
-// Copyright (C) 2015		FIX94
+   This program is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU General Public License 2.0 for more details.
+
+   Copyright (C) 2010		Joseph Jordan <joe.ftpii@psychlaw.com.au>
+   Copyright (C) 2012-2013	damysteryman
+   Copyright (C) 2012-2015	Christopher Bratusek <nano@jpberlin.de>
+   Copyright (C) 2013		DarkMatterCore
+   Copyright (C) 2014		megazig
+   Copyright (C) 2015		FIX94 */
 
 /**
  * NOTE: this library has been modified to only include the patches necessary 
@@ -27,9 +29,9 @@
  */
 #define LIB_RUNTIMEIOSPATCH_VERSION "1.5.4"
 
-//==============================================================================
-// HW_RVL header
-//==============================================================================
+/*==============================================================================
+   HW_RVL header
+  ============================================================================== */
 #if defined(HW_RVL) /* defined(HW_RVL) */
 
 /**
@@ -37,31 +39,31 @@
  */
 #define AHBPROT_DISABLED (*(vu32*)0xcd800064 == 0xFFFFFFFF)
 
-//==============================================================================
-// Error code definitions:
-//==============================================================================
+/*==============================================================================
+   Error code definitions:
+  ============================================================================== */
 #define ERROR_AHBPROT       -5
 #define ERROR_PATCH         -7
 
-//==============================================================================
-// C++ header
-//==============================================================================
+/*==============================================================================
+   C++ header
+  ============================================================================== */
 #ifdef __cplusplus
 extern "C" {
 #endif
 /* __cplusplus */
 
-//==============================================================================
-// Patchsets:
-//==============================================================================
+/*==============================================================================
+   Patchsets:
+  ============================================================================== */
 /*
 Wii:
     * /dev/flash access
     * ES_ImportBoot
 */
-//==============================================================================
-// Functions:
-//==============================================================================
+/*==============================================================================
+   Functions:
+  ============================================================================== */
 
 /**
  * This function can be used to keep HW_AHBPROT access when going to reload IOS
@@ -80,13 +82,34 @@ Wii:
  *      > 0             : Success   - return equals to number of applied patches
  *      ERROR_AHBPROT   : Error     - No HW_AHBPROT access
  */
-s32 IosPatch_AHBPROT(bool verbose);
+
+/* [nitr8]: Unused */
+/*s32 IosPatch_AHBPROT(bool verbose); */
 
 
-s32 Fix_ES_ImportBoot();
-s32 Enable_DevFlash();
-s32 Enable_DevBoot2();
+s32 Fix_ES_ImportBoot(void);
+s32 Enable_DevFlash(void);
 
+/* [nitr8]: get rid of warning for implicit declaration of function */
+s32 Restore_Trucha(void);
+
+s32 Enable_DevBoot2(void);
+
+/* [nitr8]: Added */
+s32 Disable_FlashECCCheck(void);
+s32 Enable_FlashECCCheck(void);
+
+/* [nitr8]: Added */
+s32 Disable_UIDCheck(void);
+s32 Enable_UIDCheck(void);
+
+/* [nitr8]: Added */
+s32 Disable_IOSOpen_ACCESS_prevention(void);
+s32 Enable_IOSOpen_ACCESS_prevention(void);
+
+/* [nitr8]: Added */
+s32 Disable_IOS_Debug_Output(void);
+s32 Enable_IOS_Debug_Output(void);
 
 /**
  * This function applies patches on current IOS
@@ -98,7 +121,9 @@ s32 Enable_DevBoot2();
  *      ERROR_AHBPROT   : Error     - No HW_AHBPROT access
  *      ERROR_PATCH     : Error     - Patching HW_AHBPROT access failed
  */
-s32 IosPatch_RUNTIME(bool verbose);
+
+/* [nitr8]: Unused */
+/* s32 IosPatch_RUNTIME(bool verbose); */
 
 
 /**
@@ -112,18 +137,21 @@ s32 IosPatch_RUNTIME(bool verbose);
  *      ERROR_AHBPROT   : Error     - No HW_AHBPROT access
  *      ERROR_PATCH     : Error     - Patching HW_AHBPROT access failed
  */
-s32 IosPatch_FULL(bool verbose, int IOS);
 
-//==============================================================================
-// C++ footer
-//==============================================================================
+/* [nitr8]: Unused */
+/* s32 IosPatch_FULL(bool verbose, int IOS); */
+
+/*==============================================================================
+   C++ footer
+  ============================================================================== */
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */
 
-//==============================================================================
-// HW_RVL footer
-//==============================================================================
+/*==============================================================================
+   HW_RVL footer
+  ============================================================================== */
 #endif /* defined(HW_RVL) */
 
-#endif
+#endif /* __RUNTIMEIOSPATCH_H__ */
+
