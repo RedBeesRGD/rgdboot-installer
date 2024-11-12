@@ -15,9 +15,13 @@ include $(DEVKITPPC)/wii_rules
 # SOURCES is a list of directories containing source code
 # INCLUDES is a list of directories containing extra header files
 #---------------------------------------------------------------------------------
-TARGET		:=	$(notdir $(CURDIR))
+
+# [nitr8]: change this to "boot"
+#TARGET		:=	$(notdir $(CURDIR))
+TARGET		:=	boot
+
 BUILD		:=	build
-SOURCES		:=	src src/hbc
+SOURCES		:=	src src/hbc src/jpeglib
 DATA		:=	data
 INCLUDES	:=	include
 
@@ -25,27 +29,43 @@ INCLUDES	:=	include
 # options for code generation
 #---------------------------------------------------------------------------------
 
-CFLAGS	= -O2 -Wall $(MACHDEP) $(INCLUDE) -DDOLPHIN_CHECK
+# [nitr8]: be really aggressive, so add this - then fix even more compiler warnings
+#WARNPLUS = -Wpedantic
 
-ifdef NO_DOLPHIN_CHECK
-	CFLAGS	= -O2 -Wall $(MACHDEP) $(INCLUDE)
+# [nitr8]: be more specific, so add this - then fix compiler warnings
+WARNFLAGS = -Wextra $(WARNPLUS)
+
+# [nitr8]: Add support for realtime debugging using a USB-Gecko (-g) */
+CFLAGS = -g -O2 -Wall $(WARNFLAGS) $(MACHDEP) $(INCLUDE)
+
+# [nitr8]: Reworked
+ifndef NO_DOLPHIN_CHECK
+# [nitr8]: Reworked
+#	CFLAGS = -O2 -Wall $(WARNFLAGS) $(MACHDEP) $(INCLUDE)
+	CFLAGS += -DDOLPHIN_CHECK
+else
 	TARGET = rgdboot-installer_noDolphinCheck
 endif
 
 # Skipping the version clear will cause a brick on Wiis with a boot2 version higher than 0 - use for testing if you have a flash programmer only
 ifdef NO_VERSION_CLEAR
-	CFLAGS = -O2 -Wall $(MACHDEP) $(INCLUDE) -DNO_VERSION_CLEAR
+# [nitr8]: Reworked
+#	CFLAGS = -O2 -Wall $(WARNFLAGS) $(MACHDEP) $(INCLUDE)
+	CFLAGS += -DNO_VERSION_CLEAR
 	TARGET = rgdboot-installer_noVersionClear
 endif
 
-CXXFLAGS	=	$(CFLAGS)
+CXXFLAGS = $(CFLAGS)
 
-LDFLAGS	=	$(MACHDEP) -Wl,-Map,$(notdir $@).map
+LDFLAGS	= $(MACHDEP) -T$(CURDIR)/../rgdboot.ld -Wl,-Map,$(notdir $@).map
 
 #---------------------------------------------------------------------------------
 # any extra libraries we wish to link with the project
 #---------------------------------------------------------------------------------
-LIBS	:=	-lfat -lwiiuse -lbte -logc -lm
+
+# [nitr8]: Add support for realtime debugging using a USB-Gecko (libdb) */
+#LIBS	:=	-lfat -lwiiuse -lbte -logc -lm
+LIBS	:=	-lfat -lwiiuse -lbte -logc -ldb -lm
 
 #---------------------------------------------------------------------------------
 # list of directories containing libraries, this must be the top level containing
@@ -97,7 +117,9 @@ export HFILES := $(addsuffix .h,$(subst .,_,$(BINFILES)))
 export INCLUDE	:=	$(foreach dir,$(INCLUDES), -iquote $(CURDIR)/$(dir)) \
 					$(foreach dir,$(LIBDIRS),-I$(dir)/include) \
 					-I$(CURDIR)/$(BUILD) \
-					-I$(LIBOGC_INC)
+					-I$(LIBOGC_INC) \
+					-iquote $(CURDIR)/$(INCLUDES)/hbc \
+					-iquote $(CURDIR)/$(INCLUDES)/jpeglib
 
 #---------------------------------------------------------------------------------
 # build a list of library paths
@@ -108,9 +130,14 @@ export OUTPUT	:=	$(CURDIR)/$(TARGET)
 .PHONY: $(BUILD) clean
 
 #---------------------------------------------------------------------------------
-buildNumber = $(shell git rev-list --count HEAD)
+#buildNumber = $(shell git rev-list --count HEAD)
+# [nitr8]: get rid of warnings when variables are not used at all
 $(BUILD):
-	@echo "static char *buildNumber = \"$(buildNumber)\";" > $(INCLUDES)/version.h
+#	@echo "static char *buildNumber = \"$(buildNumber)\";" > $(INCLUDES)/version.h
+#	@echo "char *buildNumber = \"$(buildNumber)\";" > $(INCLUDES)/version.h
+
+	@gcc -s -Os -Wall -Wextra -o buildnumber buildNumber.cpp
+	@./buildnumber $(INCLUDES)/version.h
 	@[ -d $@ ] || mkdir -p $@
 	@$(MAKE) --no-print-directory -C $(BUILD) -f $(CURDIR)/Makefile
 
@@ -144,7 +171,7 @@ $(OFILES_SOURCES) : $(HFILES)
 %.jpg.o	%_jpg.h :	%.jpg
 #---------------------------------------------------------------------------------
 	@echo $(notdir $<)
-	$(bin2o)
+	@$(bin2o)
 
 -include $(DEPENDS)
 

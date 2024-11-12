@@ -14,7 +14,13 @@
 
 /*************************** HEADER FILES ***************************/
 #include <stdlib.h>
-#include <memory.h>
+
+/* [nitr8]: error: header file missing...
+#include <memory.h> */
+
+/* [nitr8]: ...but this fixes it */
+#include <string.h>
+
 #include "sha256.h"
 
 /****************************** MACROS ******************************/
@@ -41,7 +47,9 @@ static const WORD k[64] = {
 };
 
 /*********************** FUNCTION DEFINITIONS ***********************/
-void sha256_transform(SHA256_CTX *ctx, const BYTE data[])
+/* [nitr8]: Make static */
+/* void sha256_transform(SHA256_CTX *ctx, const BYTE data[]) */
+static void sha256_transform(SHA256_CTX *ctx, const BYTE data[])
 {
 	WORD a, b, c, d, e, f, g, h, i, j, t1, t2, m[64];
 
@@ -117,7 +125,7 @@ void sha256_final(SHA256_CTX *ctx, BYTE hash[])
 
 	i = ctx->datalen;
 
-	// Pad whatever data is left in the buffer.
+	/* Pad whatever data is left in the buffer. */
 	if (ctx->datalen < 56) {
 		ctx->data[i++] = 0x80;
 		while (i < 56)
@@ -131,7 +139,7 @@ void sha256_final(SHA256_CTX *ctx, BYTE hash[])
 		memset(ctx->data, 0, 56);
 	}
 
-	// Append to the padding the total message's length in bits and transform.
+	/* Append to the padding the total message's length in bits and transform. */
 	ctx->bitlen += ctx->datalen * 8;
 	ctx->data[63] = ctx->bitlen;
 	ctx->data[62] = ctx->bitlen >> 8;
@@ -143,8 +151,8 @@ void sha256_final(SHA256_CTX *ctx, BYTE hash[])
 	ctx->data[56] = ctx->bitlen >> 56;
 	sha256_transform(ctx, ctx->data);
 
-	// Since this implementation uses little endian byte ordering and SHA uses big endian,
-	// reverse all the bytes when copying the final state to the output hash.
+	/* Since this implementation uses little endian byte ordering and SHA uses big endian,
+	   reverse all the bytes when copying the final state to the output hash. */
 	for (i = 0; i < 4; ++i) {
 		hash[i]      = (ctx->state[0] >> (24 - i * 8)) & 0x000000ff;
 		hash[i + 4]  = (ctx->state[1] >> (24 - i * 8)) & 0x000000ff;
@@ -156,3 +164,4 @@ void sha256_final(SHA256_CTX *ctx, BYTE hash[])
 		hash[i + 28] = (ctx->state[7] >> (24 - i * 8)) & 0x000000ff;
 	}
 }
+
