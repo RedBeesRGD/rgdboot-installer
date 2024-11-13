@@ -1,3 +1,15 @@
 build/
 rgdboot-installer*
 include/version.h
+std.cfg
+rgdboot.ld
+pack-it.sh
+cppcheck.cppcheck
+connect.txt
+compile.log
+START DEBUGGING - TCP.launch
+START DEBUGGING - USB.launch
+.project
+.cproject
+.settings/
+cppcheck-cppcheck-build-dir/
