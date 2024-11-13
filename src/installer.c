@@ -307,6 +307,8 @@ void SDBootInstaller(void)
 	printf("Please select the file you want to install... ");
 	WaitForPad();
 	sdboot_path = FileSelect("/");
+	
+	ClearScreen();
 
 	/* [nitr8]: Added - used for easier RESET when it comes to restarting the app */
 	if (strcmp(sdboot_path, "exit") == 0)
@@ -341,6 +343,8 @@ void NANDBootInstaller(void)
 	printf("Please select the file you want to install... ");
 	WaitForPad();
 	nandboot_path = FileSelect("/");
+	
+	ClearScreen();
 
 	/* [nitr8]: Added - used for easier RESET when it comes to restarting the app */
 	if (strcmp(nandboot_path, "exit") == 0)
@@ -351,6 +355,8 @@ void NANDBootInstaller(void)
 	printf("Please select the payload you want to install... ");
 	WaitForPad();
 	nandboot_payload_path = FileSelect("/");
+	
+	ClearScreen();
 
 	/* [nitr8]: Added - used for easier RESET when it comes to restarting the app */
 	if (strcmp(nandboot_payload_path, "exit") == 0)
@@ -367,6 +373,7 @@ void HBCInstaller(void)
 	HandleInstall(InstallHBC(), INSTALL_HBC);
 	printf("\nPress any button to continue.");
 	WaitForPad();
+	ClearScreen();
 }
 
 void Boot2WADInstaller(void)
@@ -391,6 +398,8 @@ void Boot2WADInstaller(void)
 	printf("Please select the WAD you want to install... ");
 	WaitForPad();
 	boot2wad_path = FileSelect("/");
+	
+	ClearScreen();
 
 	/* [nitr8]: Added - used for easier RESET when it comes to restarting the app */
 	if (strcmp(boot2wad_path, "exit") == 0)
@@ -432,6 +441,8 @@ void Boot2BackupInstaller(void)
 	printf("Please select the boot2 backup you want to restore... ");
 	WaitForPad();
 	boot2_backup_path = FileSelect("/");
+	
+	ClearScreen();
 
 	/* [nitr8]: Added - used for easier RESET when it comes to restarting the app */
 	if (strcmp(boot2_backup_path, "exit") == 0)
@@ -459,6 +470,8 @@ void Boot2BackupMake(void)
 	HandleInstall(BackupBoot2Blocks(BOOT2_BACKUP_PATH), MAKE_BOOT2_BACKUP);
 	printf("\nPress any button to continue.");
 	WaitForPad();
+	
+	ClearScreen();
 }
 
 void RestoreNAND(void)
