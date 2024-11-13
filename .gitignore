@@ -13,3 +13,5 @@ START DEBUGGING - USB.launch
 .cproject
 .settings/
 cppcheck-cppcheck-build-dir/
+build_debug/
+buildnumber
