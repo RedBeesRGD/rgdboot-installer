@@ -394,7 +394,10 @@ int SEEPROMCompareVersion(int state)
 
 									gecko_printf("\n");
 
-									goto abort;
+									if(!is_invalid)
+										return 0; //ret = 0; goto success;
+									else
+										goto abort;
 								}
 								else
 								{
@@ -916,5 +919,25 @@ int SEEPROMClearStep(void)
 		printf("\nError %d while trying to clear the boot2 version!\n", ret);
 
 	return ret;
+}
+
+/* [root1024]: Added */
+void SEEPROMDisplayInfo(void){
+	//u8 koreanKey[16];
+	//u8 blank[16];
+	u8 boot2data[20];
+	int ret = 0;
+	
+	//memset(blank, 0, sizeof(blank));
+	//ret = SEEPROMRead(koreanKey, 0x74, 16);
+	
+	SEEPROMRead(boot2data, BOOT2_INFO_COPY_1_OFFSET, sizeof(boot2data));
+	
+	printf("\nBoot2 SEEPROM Version: \n");
+	printf("Bank1: %d\n", boot2data[0]);
+	printf("Bank2: %d\n\n", boot2data[10]);
+	hexdump_graphical(0, boot2data, sizeof(boot2data));
+	
+	WPAD_Init();
 }
 
