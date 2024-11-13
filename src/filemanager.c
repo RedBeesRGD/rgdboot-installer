@@ -181,9 +181,9 @@ static void PrintFileManager(void)
 	u16 start = currentPage * maxEntries;
 	u16 end   = (currentPage + 1) * maxEntries - 1;
 
-	printf("Current Directory: %s\n\n", currentDir);
+	printf("\x1b[6;0H");
 	
-	printf("\x1b[8;0H");
+	printf("Current Directory: %s\n\n", currentDir);
 	
 	for( ; start < nd && start <= end; start++)
 		printf("   <DIR>  %s\n", dirlist[start]->d_name);
@@ -277,7 +277,7 @@ static void MoveFM(u8 direction)
 		}
 	}
 
-	ClearScreen();
+	//ClearScreen();
 	PrintFileManager();
 	PrintFMCursor();
 }
