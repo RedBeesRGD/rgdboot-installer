@@ -49,12 +49,50 @@ static const u8 es_importboot_new[] = {0x68, 0x5a, 0x9b, 0x1e, 0x42, 0x9a, 0xe0,
 
 
 /* Special thanks to nitr8 for the /dev/flash access patch!
-   This should work on IOSes that previously had /dev/flash access enabled */
-static const u8 dev_flash_old[] = { 0xa7, 0x28, 0x00, 0xd1, 0x02, 0x23, 0x00 };
-static const u8 dev_flash_new[] = { 0xa7, 0x28, 0x00, 0xd1, 0x02, 0x23, 0x01 };
+ * Slightly modified to make it compatible for a few more IOS versions.
+ * It should work on the following IOS versions:
+ * IOS9-64-v1034
+ * IOS12-64-v526
+ * IOS13-64-v1032
+ * IOS14-64-v1032
+ * IOS15-64-v1032
+ * IOS17-64-v1032
+ * IOS21-64-v1039
+ * IOS22-64-v1294
+ * IOS28-64-v1807
+ * IOS31-64-v3608
+ * IOS33-64-v3608
+ * IOS34-64-v3608
+ * IOS35-64-v3608
+ * IOS36-64-v3351
+ * IOS36-64-v3608
+ * IOS38-64-v3610
+ * IOS38-64-v3867
+ * IOS38-64-v4123
+ * IOS38-64-v4124
+   This patch only works on IOS versions that formerly had /dev/flash access enabled. */
+//static const u8 dev_flash_old[] = { 0xa7, 0x28, 0x00, 0xd1, 0x02, 0x23, 0x00 };
+//static const u8 dev_flash_new[] = { 0xa7, 0x28, 0x00, 0xd1, 0x02, 0x23, 0x01 };
+static const u8 dev_flash_old[] = { 0x28, 0x00, 0xd1, 0x02, 0x23, 0x00, 0x46, 0x98 };
+static const u8 dev_flash_new[] = { 0x28, 0x00, 0xd1, 0x02, 0x23, 0x01, 0x46, 0x98 };
 
-/* New /dev/flash patch that should work on every other IOS, by root1024
-   WARNING: this has the side effect of making /dev/boot2 inaccessible! */
+/* New /dev/flash patch that should work on every other IOS, by root1024.
+ * WARNING: this has the side effect of making /dev/boot2 inaccessible!
+ * It should work on the following IOS versions:
+ * IOS56-64-v5661
+ * IOS56-64-v5662
+ * IOS57-64-v5661
+ * IOS57-64-v5918
+ * IOS57-64-v5919
+ * IOS58-64-v6175
+ * IOS58-64-v6176
+ * IOS60-64-v6174
+ * IOS61-64-v5662
+ * IOS62-64-v6430
+ * IOS70-64-v6687
+ * IOS80-64-v6943
+ * IOS80-64-v6944
+ * If you want to access /dev/boot2, you NEED to UNDO this patch! */
 static const u8 dev_flash_old1[] = { 0x66, 0x73, 0x00, 0x00, 0x62, 0x6f, 0x6f, 0x74, 0x32 };
 static const u8 dev_flash_new1[] = { 0x66, 0x73, 0x00, 0x00, 0x66, 0x6C, 0x61, 0x73, 0x68 };
 
@@ -81,6 +119,7 @@ static inline void disable_memory_protection(void)
 /* void TextColor(u8 color, u8 bold) */
 static void TextColor(u8 color, u8 bold)
 {
+	#if 0
 	/* Set foreground color */
 
 	/* [nitr8]: fix warning about signed int <-> unsigned int against string format */
@@ -88,6 +127,7 @@ static void TextColor(u8 color, u8 bold)
 	printf("\x1b[%d;%um", color + 30, bold);
 
 	fflush(stdout);
+	#endif
 }
 
 static u8 apply_patch(const char *name, const u8 *old, u32 old_size, const u8 *patch, size_t patch_size, u32 patch_offset, bool verbose)
@@ -194,8 +234,8 @@ static s32 IosPatch_RUNTIME(bool verbose)
 
 		count += apply_patch("ES_ImportBoot", es_importboot_old, sizeof(es_importboot_old), es_importboot_new, sizeof(es_importboot_new), 0, verbose);
 		count += apply_patch("/dev/flash (old)", dev_flash_old, sizeof(dev_flash_old), dev_flash_new, sizeof(dev_flash_new), 0, verbose);
-		count += apply_patch("/dev/flash (new, part1)", dev_flash_old1, sizeof(dev_flash_old1), dev_flash_new1, sizeof(dev_flash_new1), 0, verbose);
-		count += apply_patch("/dev/flash (new, part2)", dev_flash_old2, sizeof(dev_flash_old2), dev_flash_new2, sizeof(dev_flash_new2), 0, verbose);
+		//count += apply_patch("/dev/flash (new, part1)", dev_flash_old1, sizeof(dev_flash_old1), dev_flash_new1, sizeof(dev_flash_new1), 0, verbose);
+		//count += apply_patch("/dev/flash (new, part2)", dev_flash_old2, sizeof(dev_flash_old2), dev_flash_new2, sizeof(dev_flash_new2), 0, verbose);
 		
 		return count;
 	}
@@ -286,7 +326,7 @@ s32 Enable_DevFlash(void)
 		s32 count = 0;
 
 		disable_memory_protection();
-		count += apply_patch("/dev/flash (old)", dev_flash_old, sizeof(dev_flash_old), dev_flash_new, sizeof(dev_flash_new), 0, true);
+		count += apply_patch("/dev/flash", dev_flash_old, sizeof(dev_flash_old), dev_flash_new, sizeof(dev_flash_new), 0, true);
 		count += apply_patch("/dev/flash (new, part1)", dev_flash_old1, sizeof(dev_flash_old1), dev_flash_new1, sizeof(dev_flash_new1), 0, true);
 		count += apply_patch("/dev/flash (new, part2)", dev_flash_old2, sizeof(dev_flash_old2), dev_flash_new2, sizeof(dev_flash_new2), 0, true);
 		
