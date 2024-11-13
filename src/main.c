@@ -73,10 +73,10 @@ int main(int argc, char **argv)
 	DEBUG_Init(GDBSTUB_DEVICE_USB, GDBSTUB_DEF_CHANNEL);
 
 	/* [nitr8]: Set breakpoint here */
-	_break();
+	//_break();
 #endif
 
-	gecko_printf("%08x\n", ipc_initialize());
+	//gecko_printf("%08x\n", ipc_initialize());
 
 	/* [nitr8]: Add nice and shiny RGD logo */
 	memset(&about, 0, sizeof(JPEGIMG));
@@ -116,6 +116,8 @@ int main(int argc, char **argv)
 	/* Get Bus Access (disable AHBPROT) */
 	Haxx_GetBusAccess();
 	
+	gecko_init(1);
+	
 	if (!AHBPROT_DISABLED)
 	{ 
 		ThrowError(errorStrings[ErrStr_NeedPerms]);
@@ -135,13 +137,13 @@ int main(int argc, char **argv)
 	}
 
 	/* [nitr8]: Disabled... */
-/*
+
 	if(!fatInitDefault()){
 		ThrowError(errorStrings[ErrStr_SDCard]);
 	}
-*/
+
 	/* [nitr8]: Instead, loop until the filesystem was initialized */
-	while (!sd_initialized)
+	/*while (!sd_initialized)
 	{
 		sd_initialized = fatInitDefault();
 		fat_init_count++;
@@ -150,7 +152,7 @@ int main(int argc, char **argv)
 
 		if (ret != 0)
 			return ret;
-	}
+	}*/
 
 	/* [nitr8]: Added - Why is this missing??? */
 	/* 	    Basically - trying to write a file into a directory which is non-existent will always turn into a DSI exception interrupt
