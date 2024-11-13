@@ -113,7 +113,7 @@ static void HandleInstall(s32 ret, u8 installType)
 					break;
 
 				case INSTALL_BACKUP:
-					printf("boot2 backup was installed successfully!\n");
+					printf("boot2 backup was restored successfully!\n");
 					break;
 
 				case MAKE_BOOT2_BACKUP:
@@ -185,7 +185,7 @@ static void HandleInstall(s32 ret, u8 installType)
 /* [nitr8]: Added controller button pattern so some of the menu entries don't get
 	    executed out of a sudden, like "ERASE NAND" which is just dangerous */
 static int button_match_pattern(void)
-{
+{	
 	static int err_state = 0;
 	int wpad_index = 0;
 	int wpad_classic_index = 0;
@@ -284,7 +284,7 @@ void SDBootInstaller(void)
 	char* sdboot_path;
 	int ret;
 
-//	Enable_DevBoot2();
+	Enable_DevBoot2();
 	ret = SEEPROMClearStep();
 
 	/* [nitr8]: Add a check if clearing the SEEPROM boot2 info regions succeeded */
@@ -552,8 +552,9 @@ void BootSysCheck(void)
 		
 		printf("%s %s\n", boot2Block.version, boot2Block.bootMiiVer);
 	}
-	
 	checkBlocks(1,7);
+	
+	SEEPROMDisplayInfo();
 	
 	printf("\nPress any key to continue.");
 	WaitForPad();
@@ -564,7 +565,7 @@ void EraseNANDFS(void)
 	/* [nitr8]: error: 'for' loop initial declarations are only allowed in C99 mode */
 	int i;
 	
-	int ret;
+	int ret = 0;
 	Boot2Block boot2Block;
 	bool hasBoot2V0;
 
