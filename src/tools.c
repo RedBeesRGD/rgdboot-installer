@@ -474,6 +474,41 @@ void hexdump(u32 addr, const void *d, int len)
 	}
 }
 
+/* [root1024]: Added - simply replaced "gecko_printf" with "printf" */
+void hexdump_graphical(u32 addr, const void *d, int len)
+{
+	u8 *data;
+	int i, off;
+
+	data = (u8 *)d;
+
+	for (off = 0; off < len; off += 16)
+	{
+		printf("%08x  ", addr + off);
+
+		for (i = 0; i < 16; i++)
+		{
+			if ((i + off) >= len)
+				printf("   ");
+			else
+				printf("%02x ", data[off + i]);
+		}
+
+		printf(" ");
+
+		for (i = 0; i < 16; i++)
+		{
+			if ((i + off) >= len)
+				printf(" ");
+			else
+				printf("%c", ascii(data[off + i]));
+		}
+
+		printf("\n");
+	}
+}
+
+
 /* [nitr8]: Added - as this definitely might be very useful */
 /* 	    "Borrowed" from the HBC's "channelapp" source */
 void memstats(int reset)
