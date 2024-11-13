@@ -5,7 +5,7 @@
 #include <gccore.h>
 #include <wiiuse/wpad.h>
 #include <gctypes.h>
-#include <gc/debug.h>
+#include <debug.h>
 
 #include "errorhandler.h"
 #include "errorcodes.h"
