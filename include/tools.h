@@ -78,6 +78,9 @@ u32 GetBoot2Version(void);
 /* [nitr8]: Added */
 void hexdump(u32 addr, const void *d, int len);
 
+/* [root1024]: Added - simply replaced "gecko_printf" with "printf" */
+void hexdump_graphical(u32 addr, const void *d, int len);
+
 /* [nitr8]: Added */
 void memstats(int reset);
 
