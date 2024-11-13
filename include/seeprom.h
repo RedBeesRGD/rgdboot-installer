@@ -23,6 +23,9 @@ int SEEPROMCompareVersion(int state);
 /* [nitr8]: Added */
 int SEEPROMClearVersion(void);
 
+/* [root1024]: Added */
+void SEEPROMDisplayInfo(void);
+
 /* [nitr8]: Added */
 #ifdef __cplusplus
 }
