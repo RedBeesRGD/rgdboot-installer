@@ -474,309 +474,9 @@ success:
 	return ReadBoot2NonECC("/boot2/boot2_noecc.bin");
 }
 
-#define IPC_CODE(f,d,r)		(((f)<<24)|((d)<<16)|(r))
-#define IPC_SLOW		0x00
-#define IPC_DEV_NAND		0x01
-#define IPC_NAND_RESET		0x0000
-#define IPC_NAND_GETID		0x0001
-#define IPC_NAND_READ		0x0002
-#define IPC_NAND_WRITE		0x0003
-#define IPC_NAND_ERASE		0x0004
-#define IPC_NAND_STATUS		0x0005
-#define	IPC_CTRL_SEND		0x01
-#define VIRT_TO_PHYS(x)		((u32)(x) & 0x3FFFFFFF)	/*!< Converts virtual addresses to physical */
-#define PHYS_TO_VIRT(x)		((u32)(x) | 0x80000000)	/*!< Converts physical addresses to cached virtual */
-
-
-/*! The structure for a request to MINI
- */
-typedef struct {
-	u32 code;	/*!< The request code */
-	u32 tag;	/*!< Tag */
-	u32 args[6];	/*!< Arguments for the request */
-} ipc_request_t;
-
-typedef const struct {
-	char magic[3];
-	char version;
-	void *mem2_boundary;
-	volatile ipc_request_t *ipc_in;
-	u32 ipc_in_size;
-	volatile ipc_request_t *ipc_out;
-	u32 ipc_out_size;
-} ipc_infohdr_t;
-
-static ipc_infohdr_t *infohdr;
-
-static volatile ipc_request_t *in_queue;
-static volatile ipc_request_t *out_queue;
-
-static int in_size;
-static int out_size;
-
-static u16 in_tail;
-static u16 out_head;
-
-static int initialized = 0;
-
-static u32 cur_tag;
-
-// last IPC message received, copied because we need to make space in the queue
-ipc_request_t req_recv;
-
-void ppc_sync(void)
-{
-	asm("sync ; isync");
-}
-
-void sync_before_read(void *p, u32 len)
-{
-	u32 a, b;
-	a = (u32)p & ~0x1F;
-	b = ((u32)p + len + 0x1F) & ~0x1F;
-	for(; a < b; a += 32)
-		asm("dcbi 0,%0" : : "b"(a));
-
-	ppc_sync();
-}
-
-void sync_after_write(const void *p, u32 len)
-{
-	u32 a, b;
-	a = (u32)p & ~0x1F;
-	b = ((u32)p + len + 0x1F) & ~0x1F;
-	for(; a < b; a += 32)
-		asm("dcbst 0,%0" : : "b"(a));
-
-	ppc_sync();
-}
-
-void u_delay(u32 d)
-{
-	// should be good to max .2% error
-	u32 ticks = d * 19 / 10;
-
-	write32(HW_TIMER, 0);
-	while(read32(HW_TIMER) < ticks);
-}
-
-static inline u16 peek_outtail(void)
-{
-	return read32(HW_IPC_ARMMSG) & 0xFFFF;
-}
-
-static inline u16 peek_inhead(void)
-{
-	return read32(HW_IPC_ARMMSG) >> 16;
-}
-
-static inline void poke_intail(u16 num)
-{
-	mask32(HW_IPC_PPCMSG, 0xFFFF, num);
-}
-
-static inline void poke_outhead(u16 num)
-{
-	mask32(HW_IPC_PPCMSG, 0xFFFF0000, num << 16);
-}
-
-/* Address mapping. */
-/*! \brief Converts a virtual address to a physical one
- *
- * \param p the virtual address.
- * \return the physical address.
- */
-static inline u32 virt_to_phys(const void *p)
-{
-	return (u32)(VIRT_TO_PHYS(p));
-}
-
-/*! \brief Converts a physical address to a cached virtual one
- *
- * \param p the physical address.
- * \return the cached virtual address.
- */
-static inline void *phys_to_virt(u32 x)
-{
-	return (void *)(PHYS_TO_VIRT(x));
-}
-
-int ipc_initialize(void)
-{
-
-	infohdr = (ipc_infohdr_t*)(phys_to_virt(read32(0x13FFFFFC)));
-	sync_before_read((void*)infohdr, sizeof(ipc_infohdr_t));
-
-	gecko_printf("IPC: infoheader at %p %08x\n", infohdr);
-
-	if(memcmp(infohdr->magic, "IPC", 3)) {
-		gecko_printf("IPC: bad magic on info structure\n",infohdr);
-		return 0;
-	}
-	if(infohdr->version != 1) {
-		gecko_printf("IPC: unknown IPC version %d\n",infohdr->version);
-		return 0;
-	}
-
-	in_queue = phys_to_virt((u32)infohdr->ipc_in);
-	out_queue = phys_to_virt((u32)infohdr->ipc_out);
-
-	in_size = infohdr->ipc_in_size;
-	out_size = infohdr->ipc_out_size;
-
-	in_tail = read32(HW_IPC_PPCMSG) & 0xFFFF;
-	out_head = read32(HW_IPC_PPCMSG) >> 16;
-
-	gecko_printf("IPC: initial in tail: %d, out head: %d\n", in_tail, out_head);
-
-	cur_tag = 1;
-
-	initialized = 1;
-	return 1;
-}
-
-void ipc_vpost(u32 code, u32 tag, u32 num_args, va_list ap)
-{
-	int arg = 0;
-	int n = 0;
-
-	if(!initialized) {
-		gecko_printf("IPC: not inited\n");
-		return;
-	}
-
-	if(peek_inhead() == ((in_tail + 1)&(in_size-1))) {
-		gecko_printf("IPC: in queue full, spinning\n");
-		while(peek_inhead() == ((in_tail + 1)&(in_size-1))) {
-			u_delay(10);
-			if(n++ > 20000) {
-				gecko_printf("IPC: ARM might be stuck, still waiting for inhead %d != %d\n",
-					peek_inhead(), ((in_tail + 1)&(in_size-1)));
-				n = 0;
-			}
-		}
-	}
-	in_queue[in_tail].code = code;
-	in_queue[in_tail].tag = tag;
-	while(num_args--) {
-		in_queue[in_tail].args[arg++] = va_arg(ap, u32);
-	}
-	sync_after_write((void*)&in_queue[in_tail], 32);
-	in_tail = (in_tail+1)&(in_size-1);
-	poke_intail(in_tail);
-	write32(HW_IPC_PPCCTRL, IPC_CTRL_SEND);
-}
-
-// since we're not using IRQs, we don't use the reception bell at all at the moment
-ipc_request_t *ipc_receive(void)
-{
-	while(peek_outtail() == out_head);
-	sync_before_read((void*)&out_queue[out_head], 32);
-	req_recv = out_queue[out_head];
-	out_head = (out_head+1)&(out_size-1);
-	poke_outhead(out_head);
-
-	return &req_recv;
-}
-
-void ipc_process_unhandled(volatile ipc_request_t *rep)
-{
-	gecko_printf("IPC: Unhandled message: %08x %08x [%08x %08x %08x %08x %08x %08x]\n",
-		rep->code, rep->tag, rep->args[0], rep->args[1], rep->args[2], rep->args[3], 
-		rep->args[4], rep->args[5]);
-}
-
-ipc_request_t *ipc_receive_tagged(u32 code, u32 tag)
-{
-	ipc_request_t *rep;
-	rep = ipc_receive();
-	while(rep->code != code || rep->tag != tag) {
-		ipc_process_unhandled(rep);
-		rep = ipc_receive();
-	}
-	return rep;
-}
-
-ipc_request_t *ipc_exchange(u32 code, u32 num_args, ...)
-{
-	va_list ap;
-	ipc_request_t *rep;
-
-	if(num_args)
-		va_start(ap, num_args);
-
-	ipc_vpost(code, cur_tag, num_args, ap);
-
-	if(num_args)
-		va_end(ap);
-
-	rep = ipc_receive_tagged(code, cur_tag);
-
-	cur_tag++;
-	return rep;
-}
-
-void nand_reset(void)
-{
-	ipc_exchange(IPC_CODE(IPC_SLOW, IPC_DEV_NAND, IPC_NAND_RESET), 0);
-}
-
-u32 nand_getid(void)
-{
-	static u8 idbuf[64] __attribute__((aligned(64)));
-
-	ipc_exchange(IPC_CODE(IPC_SLOW, IPC_DEV_NAND, IPC_NAND_GETID), 1, virt_to_phys(&idbuf));
-	sync_before_read(idbuf, 0x40);
-
-	return idbuf[0] << 24 | idbuf[1] << 16 | idbuf[2] << 8 | idbuf[3];
-}
-
-u8 nand_status(void)
-{
-	static u8 buf[64] __attribute__((aligned(64)));
-
-	ipc_exchange(IPC_CODE(IPC_SLOW, IPC_DEV_NAND, IPC_NAND_STATUS), 1, virt_to_phys(&buf));
-	sync_before_read(buf, 0x40);
-
-	return buf[0];
-}
-
-int nand_read(u32 pageno, void *data, void *ecc)
-{
-	int ret;
-	if(data)
-		sync_after_write(data, 0x800);
-	if(ecc)
-		sync_after_write(ecc, 0x40);
-	ret = ipc_exchange(IPC_CODE(IPC_SLOW, IPC_DEV_NAND, IPC_NAND_READ), 3, pageno,
-		(!data ? (u32)-1 : virt_to_phys(data)),
-		(!ecc ? (u32)-1 : virt_to_phys(ecc)))->args[0];
-	if(data)
-		sync_before_read(data, 0x800);
-	if(ecc)
-		sync_before_read(ecc, 0x40);
-	return ret;
-}
-
-void nand_write(u32 pageno, void *data, void *ecc)
-{
-	if(data)
-		sync_after_write(data, 0x800);
-	if(ecc)
-		sync_after_write(ecc, 0x40);
-	ipc_exchange(IPC_CODE(IPC_SLOW, IPC_DEV_NAND, IPC_NAND_WRITE), 3, pageno,
-		(!data ? (u32)-1 : virt_to_phys(data)),
-		(!ecc ? (u32)-1 : virt_to_phys(ecc)));
-}
-
-void nand_erase(u32 pageno)
-{
-	ipc_exchange(IPC_CODE(IPC_SLOW, IPC_DEV_NAND, IPC_NAND_ERASE), 1, pageno);
-}
-
 /* [nitr8]: Make static */
 /* s32 InstallRawBoot2(const char* filename) */
-static s32 InstallRawBoot2(const char* filename)
+static s32 UNUSED_InstallRawBoot2(const char* filename)
 {
 	s32 fd;
 	u32 length;
@@ -789,8 +489,8 @@ static s32 InstallRawBoot2(const char* filename)
 
 	if (fp)
 	{
-		gecko_printf("%08x\n", nand_status());
-		gecko_printf("%08x\n", nand_getid());
+		//gecko_printf("%08x\n", nand_status());
+		//gecko_printf("%08x\n", nand_getid());
 
 		ret = ISFS_Initialize();
 
@@ -862,24 +562,30 @@ static s32 InstallRawBoot2(const char* filename)
 				goto out;
 			}
 
-			fd = IOS_Open("/dev/flash", 0);
+			//fd = flash_fd; //IOS_Open("/dev/flash", 0);
 
-			if (fd < 0)
+			if (flash_fd < 0)
 			{
 				gecko_printf("[ERROR]: Unable to open /dev/flash for writing (%d)\n", fd);
 				ret = fd;
 				goto out;
 			}
-#if 1
-			ret = IOS_Seek(fd, 0x21000, 0);
+			
+			ret = 0;
+			
+			
+			
+#if 0
+
+			ret = IOS_Seek(flash_fd, 64, 0);
 
 			if (ret < 0)
 			{
 				gecko_printf("[ERROR]: Unable to seek within /dev/flash for writing (%d)\n", fd);
 				goto out;
 			}
-#endif
-			bytes_written = IOS_Write(fd, buffer, length);
+
+			bytes_written = IOS_Write(flash_fd, buffer, length);
 
 			if (bytes_written != length)
 			{
@@ -887,13 +593,14 @@ static s32 InstallRawBoot2(const char* filename)
 				goto out;
 			}
 
-			ret = IOS_Close(fd);
+			ret = IOS_Close(flash_fd);
 
 			if (ret != 0)
 			{
 				gecko_printf("[ERROR]: Unable to close file %s (%d)\n", "/dev/boot2", ret);
 				goto out;
 			}
+#endif
 
 			free(buffer);
 		}
@@ -1033,6 +740,31 @@ out:
 	return ret;
 }
 
+s32 InstallRawBoot2(const char* filename){
+	gecko_printf("[%s]: about to read provided boot2: %s\n", __FUNCTION__, filename);
+	boot2 *b2 = ReadBoot2(filename);
+	
+	if(b2 == NULL)
+		return MISSING_FILE;
+	
+	gecko_printf("[%s]: about to install provided boot2: %s\n", __FUNCTION__, filename);
+	s32 ret = ES_ImportBoot(b2->tik,
+							b2->tikLen,
+							b2->certs->tik_cert,
+							CACERTSIZE + XSCERTSIZE,
+							b2->TMD,
+							b2->TMDLen,
+							b2->certs->TMD_cert,
+							CACERTSIZE + CPCERTSIZE,
+							b2->content,
+							b2->contentSize
+							);
+	
+	/* [root1024]: TODO: FREE the struct! */
+	
+	return ret;
+}
+
 s32 InstallWADBoot2(const char* filename)
 {
 	s32 ret;
@@ -1110,7 +842,7 @@ s32 InstallNANDBoot(const char* filename, const char* payload)
 	}*/
 	
 	/* Enable /dev/flash access (disabling /dev/boot2) */
-	Enable_DevFlash();
+//	Enable_DevFlash();
 	
 	/* Check if blocks are good before flashing */
 	ret = checkBlocks(1, 4);
