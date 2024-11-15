@@ -186,7 +186,7 @@ int main(int argc, char **argv)
 
 	enableDebug = true;
 
-	printf("RGD SDBoot Installer build %s - by \x1b[32mroot1024\x1b[37m, \x1b[31mRedBees\x1b[37m, \x1b[31mDeadlyFoez\x1b[37m\nraregamingdump.ca", buildNumber);
+	printf("RGD SDBoot Installer build %s - by \x1b[32mroot1024\x1b[37m, \x1b[36mnitr8\x1b[37m, \x1b[31mRedBees\x1b[37m, \x1b[33mDeadlyFoez\x1b[37m\nraregamingdump.ca", buildNumber);
 	printf("\nCurrent boot2 version: %i", GetBoot2Version());
 	printf("\tCurrent IOS version: IOS%i v%i\n\n", IOS_GetVersion(), IOS_GetRevision());
 	

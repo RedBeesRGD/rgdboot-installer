@@ -235,11 +235,21 @@ static void DoMainMenu(void)
 				break;
 
 			case MenuStr_Credits:
-/*				printf("\n\nApp Developers:\n       \x1b[32mroot1024\x1b[37m\n      \x1b31mRedBees\x1b[37m\n\nPayload Developers:\n         nitr8\n\nTesters:\n		\x1b[31mDeadlyFoez\x1b[37m\n\nUsing libruntimeiospatch by Nanolx\n\nAnd Wack0 for making it possible!"); */
-				for (i = 0; i < (MenuStr_Count + 3); i++)
+				ClearScreen();
+				printf("\n\nApp Developers:\n");
+				printf("       \x1b[32mroot1024\x1b[37m\n       \x1b[36mnitr8\n       \x1b[31mRedBees\x1b[37m\n\n");
+				printf("Payload Developers:");
+				printf("\n       \x1b[36mnitr8\x1b[37m\n\n");
+				printf("Testers:");
+				printf("\n       \x1b[33mDeadlyFoez\n       \x1b[36mnitr8\x1b[37m\n\n");
+				printf("Using libruntimeiospatch by Nanolx\n\n");
+				printf("Thank you mkwcat for the IOS exploit\n\n");
+				printf("And thank you Wack0 for making it possible!");
+				/*for (i = 0; i < (MenuStr_Count + 3); i++)
 					printf("\n");
-				printf("This doesn't work yet.\n");
-				clear_screen_forced = 0;
+				printf("This doesn't work yet.\n");*/
+				WaitForPad();
+				clear_screen_forced = 1;
 				break;
 
 			case MenuStr_Exit:
