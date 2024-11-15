@@ -911,6 +911,10 @@ int SEEPROMClearStep(void)
 	{
 		ret = SEEPROMClearVersion();
 	}
+	else{
+		printf("\nThe boot2 version is already cleared!\n");
+		return ret;
+	}
 #endif
 
 	if (ret == 0)
