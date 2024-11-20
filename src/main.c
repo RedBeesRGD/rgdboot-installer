@@ -123,7 +123,7 @@ int main(int argc, char **argv)
 		ThrowError(errorStrings[ErrStr_NeedPerms]);
 	}
 	
-//	Fix_ES_ImportBoot();
+	Fix_ES_ImportBoot();
 	Enable_DevFlash();
 	Restore_Trucha();
 	
