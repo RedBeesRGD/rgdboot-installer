@@ -181,7 +181,7 @@ static void PrintFileManager(void)
 	u16 start = currentPage * maxEntries;
 	u16 end   = (currentPage + 1) * maxEntries - 1;
 
-	printf("\x1b[6;0H");
+	printf("\x1b[8;0H");
 	
 	printf("Current Directory: %s\n\n", currentDir);
 	
@@ -191,7 +191,7 @@ static void PrintFileManager(void)
 	for( ; start < nd + nf && start <= end; start++)
 		printf("   <FILE> %s\n", filelist[start - nd]->d_name);
 
-	printf("\x1b[4;0H");
+	printf("\x1b[8;0H");
 }
 
 /* [nitr8]: get rid of warning for implicit declaration of function (moved HERE) */
@@ -199,7 +199,7 @@ static void PrintFileManager(void)
 /* void PrintFMCursor(void) */
 static void PrintFMCursor(void)
 {
-	u8 location = entryPosition + 8;
+	u8 location = entryPosition + 10;
 	printf("\x1b[%i;0H", location);
 	printf("%s", CURSOR);
 	printf("\x1b[2;0H");
