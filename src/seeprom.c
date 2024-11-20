@@ -927,21 +927,18 @@ int SEEPROMClearStep(void)
 
 /* [root1024]: Added */
 void SEEPROMDisplayInfo(void){
-	//u8 koreanKey[16];
-	//u8 blank[16];
-	u8 boot2data[20];
 	int ret = 0;
 	
-	//memset(blank, 0, sizeof(blank));
-	//ret = SEEPROMRead(koreanKey, 0x74, 16);
+	memset(data_after, 0, sizeof(data_after));
+	ret = SEEPROMRead(data_after, BOOT2_INFO_COPY_1_OFFSET, sizeof(data_after));
 	
-	SEEPROMRead(boot2data, BOOT2_INFO_COPY_1_OFFSET, sizeof(boot2data));
-	
-	printf("\nBoot2 SEEPROM Version: \n");
-	printf("Bank1: %d\n", boot2data[0]);
-	printf("Bank2: %d\n\n", boot2data[10]);
-	hexdump_graphical(0, boot2data, sizeof(boot2data));
-	
-	WPAD_Init();
+	if(ret == sizeof(data_after)){	
+		printf("\nBoot2 SEEPROM Version: \n");
+		printf("Bank1: %d\n", data_after[0]);
+		printf("Bank2: %d\n\n", data_after[10]);
+		hexdump_graphical(0, data_after, sizeof(data_after));
+	}
+	else
+		printf("\nFailed to retrieve boot2 info within SEEPROM.\n");
 }
 
