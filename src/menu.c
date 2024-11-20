@@ -76,6 +76,9 @@ static void PrintMenu(void)
 	/* [nitr8]: error: 'for' loop initial declarations are only allowed in C99 mode */
 	int i;
 
+	// [root1024]: clear line that displays the selected function name.
+	printf("\x1b[6;0H\33[2K");
+	
 	printf("\x1b[8;0H");
 
 	/* [nitr8]: Add sub-menu support */
@@ -189,6 +192,9 @@ static void DoMainMenu(void)
 		pad_button_was_pressed ^= 1;
 
 	ClearScreen();
+	
+	/* [root1024]: Print selected function name on top */
+	printf("\x1b[6;0H");
 
 	if (pad_button_was_pressed)
 	{
@@ -198,34 +204,43 @@ static void DoMainMenu(void)
 		switch (menuPosition)
 		{
 			case MenuStr_InstallSDBoot:
+				/* [root1024]: Print selected function name on top */
+				printf("\x1b[33m	Install SDBoot\x1b[37m\n\n");
 				SDBootInstaller();
 				break;
 
 			case MenuStr_InstallNANDBoot:
+				printf("\x1b[33m	Install NANDBoot\x1b[37m\n\n");
 				NANDBootInstaller();
 				break;
 
 			case MenuStr_InstallHBC:
+				printf("\x1b[33m	Install The Homebrew Channel\x1b[37m\n\n");
 				HBCInstaller();
 				break;
 
 			case MenuStr_InstallBoot2WAD:
+				printf("\x1b[33m	Install boot2 WAD\x1b[37m\n\n");
 				Boot2WADInstaller();
 				break;
 
 			case MenuStr_InstallBoot2Backup:
+				printf("\x1b[33m	Restore boot2 backup\x1b[37m\n\n");
 				Boot2BackupInstaller();
 				break;
 
 			case MenuStr_MakeBoot2Backup:
+				printf("\x1b[33m	Make boot2 backup\x1b[37m\n\n");
 				Boot2BackupMake();
 				break;
 
 			case MenuStr_BootSysCheck:
+				printf("\x1b[33m	Syscheck\x1b[37m\n\n");
 				BootSysCheck();
 				break;
 
 			case MenuStr_RestoreNANDBackup:
+				printf("\x1b[33m	Restore NAND backup\x1b[37m\n\n");
 				RestoreNAND();
 				break;
 
@@ -337,7 +352,7 @@ void ClearScreen(void)
 	/* [nitr8]: error: 'for' loop initial declarations are only allowed in C99 mode */
 	int i;
 
-	printf("\x1b[6;0H");
+	printf("\x1b[8;0H");
 
 	/* [nitr8]: Add sub-menu support */
 	if (entered_sub_menu > 0)
@@ -353,7 +368,7 @@ void ClearScreen(void)
 		/* [nitr8]: Also - clear the WHOLE screen */
 		/* [nitr8]: error: 'for' loop initial declarations are only allowed in C99 mode */
 		/* for(int i = 0; i < MenuStr_Count + 15; i++) { */
-		for (i = 0; i < (DebugMenuStr_Count + 18); i++)
+		for (i = 0; i < (DebugMenuStr_Count + 16); i++)
 		{
 			printf("\33[2K\r\n");
 		}
@@ -363,13 +378,13 @@ void ClearScreen(void)
 		/* [nitr8]: Also - clear the WHOLE screen */
 		/* [nitr8]: error: 'for' loop initial declarations are only allowed in C99 mode */
 		/* for(int i = 0; i < MenuStr_Count + 15; i++) { */
-		for (i = 0; i < (MenuStr_Count + 18); i++)
+		for (i = 0; i < (MenuStr_Count + 16); i++)
 		{
 			printf("\33[2K\r\n");
 		}
 	}
 
-	printf("\x1b[6;0H");
+	printf("\x1b[8;0H");
 }
 
 u8 EnterMenu(bool enableDebug)

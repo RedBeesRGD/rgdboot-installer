@@ -192,7 +192,7 @@ int main(int argc, char **argv)
 	
 	/* [nitr8]: At the same time - mark that as a high risk warning! */
 	/* printf("\nWARNING: PLEASE READ THIS CAREFULLY!\n\n"); */
-	printf("\n\x1b[31mWARNING: PLEASE READ THIS CAREFULLY!\x1b[37m\n\n");
+	printf("\x1b[8;0H\x1b[31mWARNING: PLEASE READ THIS CAREFULLY!\x1b[37m\n\n");
 	printf("THIS IS BETA SOFTWARE. AS SUCH, IT CARRIES A HIGH RISK OF BRICKING THE\nCONSOLE.\n\n");
 
 	/* [nitr8]: Regarding warning: don't forget about the SEEPROM here... */
