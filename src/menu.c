@@ -349,10 +349,30 @@ static void Move(u8 direction)
 /* [nitr8]: Moved down here */
 void ClearScreen(void)
 {
+	int i;
+	
+	if (entered_sub_menu > 0)
+	{
+		/* [nitr8]: Special flag - only clear the sub-menu once when entering */
+		/*	    This should prevent other options from not being triggered */
+		if (!initial_sub_menu_cleared)
+		{
+			menuPosition = 0;
+			initial_sub_menu_cleared = 1;
+		}
+	}
+	
+	for(i=7; i<=32; i++){
+		printf("\x1b[%d;1H\x1b[2K", i);
+	}
+	printf("\x1b[7;0H");
+	
+	#if 0
+	
 	/* [nitr8]: error: 'for' loop initial declarations are only allowed in C99 mode */
 	int i;
 
-	printf("\x1b[8;0H");
+	printf("\x1b[7;0H");
 
 	/* [nitr8]: Add sub-menu support */
 	if (entered_sub_menu > 0)
@@ -384,7 +404,9 @@ void ClearScreen(void)
 		}
 	}
 
-	printf("\x1b[8;0H");
+	printf("\x1b[7;0H");
+	
+	#endif
 }
 
 u8 EnterMenu(bool enableDebug)

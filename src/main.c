@@ -59,6 +59,22 @@ static void display_jpeg(JPEGIMG jpeg, int x, int y)
     free(jpeg.outbuffer);
 }
 
+void printHeader(){
+	printf("\x1b[2;3H");
+	printf("RGD SDBoot Installer build %s - by \x1b[32mroot1024\x1b[37m, \x1b[36mnitr8\x1b[37m, \x1b[31mRedBees\x1b[37m, \x1b[33mDeadlyFoez\x1b[37m\n   raregamingdump.ca", buildNumber);
+	printf("\n   Current boot2 version: %i", GetBoot2Version());
+	printf("\tCurrent IOS version: IOS%i v%i\n\n", IOS_GetVersion(), IOS_GetRevision());
+	printf("\x1b[1;0H");
+	printf("+------------------------------------------------------------------------------+");
+	int i;
+	for(i=2; i<=4; i++){
+		printf("|\x1b[%d;79H|", i);
+	}
+	printf("+------------------------------------------------------------------------------+");
+	
+	printf("\x1b[7;1H");
+}
+
 int main(int argc, char **argv)
 {
 	/* [nitr8]: Add check on /dev/flash lock release and filesystem initialization timeout */
@@ -93,7 +109,7 @@ int main(int argc, char **argv)
 	console_init(xfb,20,20,rmode->fbWidth,rmode->xfbHeight,rmode->fbWidth*VI_DISPLAY_PIX_SZ);
 
 	/* [nitr8]: Add nice and shiny RGD logo */
-        display_jpeg(about, 0, 344);
+        //display_jpeg(about, 0, 344);
 
 	VIDEO_Configure(rmode);
 	VIDEO_SetNextFramebuffer(xfb);
@@ -110,8 +126,6 @@ int main(int argc, char **argv)
 	/* [nitr8]: This should help alot when it comes to restarting things... */
 	/*	    Better than having to "hard-reset" the console by holding down POWER every time */
 	SYS_SetResetCallback(console_reset);
-
-	printf("\x1b[2;0H");
 	
 	/* Get Bus Access (disable AHBPROT) */
 	Haxx_GetBusAccess();
@@ -185,14 +199,10 @@ int main(int argc, char **argv)
 		enableDebug = (strcmp(argv[1], "debug") == 0) ? true : false;
 
 	enableDebug = true;
-
-	printf("RGD SDBoot Installer build %s - by \x1b[32mroot1024\x1b[37m, \x1b[36mnitr8\x1b[37m, \x1b[31mRedBees\x1b[37m, \x1b[33mDeadlyFoez\x1b[37m\nraregamingdump.ca", buildNumber);
-	printf("\nCurrent boot2 version: %i", GetBoot2Version());
-	printf("\tCurrent IOS version: IOS%i v%i\n\n", IOS_GetVersion(), IOS_GetRevision());
 	
 	/* [nitr8]: At the same time - mark that as a high risk warning! */
 	/* printf("\nWARNING: PLEASE READ THIS CAREFULLY!\n\n"); */
-	printf("\x1b[8;0H\x1b[31mWARNING: PLEASE READ THIS CAREFULLY!\x1b[37m\n\n");
+	printf("\x1b[31mWARNING: PLEASE READ THIS CAREFULLY!\x1b[37m\n\n");
 	printf("THIS IS BETA SOFTWARE. AS SUCH, IT CARRIES A HIGH RISK OF BRICKING THE\nCONSOLE.\n\n");
 
 	/* [nitr8]: Regarding warning: don't forget about the SEEPROM here... */
