@@ -284,7 +284,7 @@ void SDBootInstaller(void)
 	char* sdboot_path;
 	int ret;
 
-	Enable_DevBoot2();
+//	Enable_DevBoot2();
 	ret = SEEPROMClearStep();
 
 	/* [nitr8]: Add a check if clearing the SEEPROM boot2 info regions succeeded */
@@ -392,7 +392,7 @@ void Boot2WADInstaller(void)
 		return;
 	}
 
-	Enable_DevBoot2();
+//	Enable_DevBoot2();
 	printf("\n\n");
 	
 	printf("Please select the WAD you want to install... ");
@@ -435,7 +435,7 @@ void Boot2BackupInstaller(void)
 		return;
 	}
 
-	Enable_DevFlash();
+//	Enable_DevFlash();
 	printf("\n\n");
 	
 	printf("Please select the boot2 backup you want to restore... ");
@@ -464,7 +464,7 @@ void Boot2BackupInstaller(void)
 
 void Boot2BackupMake(void)
 {
-	Enable_DevFlash();
+//	Enable_DevFlash();
 	printf("\n\n");
 
 	HandleInstall(BackupBoot2Blocks(BOOT2_BACKUP_PATH), MAKE_BOOT2_BACKUP);
@@ -483,7 +483,7 @@ void RestoreNAND(void)
 	/* [nitr8]: Reworked - Fix menu bugs with button matches between a Wiimote and a GC Controller */
 	pad_t pad_button;
 
-	Enable_DevFlash();
+//	Enable_DevFlash();
 	setMinBlock(8);
 	
 	printf("Please select the NAND you want to restore... ");
@@ -542,7 +542,7 @@ void BootSysCheck(void)
 	Boot2Block boot2Block;
 	u8 boot2BlockNumbers[6] = {1,2,3,4,7,6};
 
-	Enable_DevFlash();
+//	Enable_DevFlash();
 	
 	boot1Version = identifyBoot1();
 	
@@ -589,7 +589,7 @@ void EraseNANDFS(void)
 	if (ret != 0)
 		return;
 
-	Enable_DevFlash();
+//	Enable_DevFlash();
 
 	hasBoot2V0 = false;
 

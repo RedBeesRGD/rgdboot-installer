@@ -194,6 +194,11 @@ int main(int argc, char **argv)
 
 	gecko_printf("Took %d iterations until filesystem was available\n", fat_init_count);
 	gecko_printf("Took %d iterations until /dev/flash was available\n", dev_flash_access_count);
+	
+	/* [root1024]: After getting a working FD for /dev/flash, revert the patch so we get access
+	 * to /dev/boot2 once again. */
+	
+	Enable_DevBoot2();
 
 	if (argc == 2)
 		enableDebug = (strcmp(argv[1], "debug") == 0) ? true : false;
