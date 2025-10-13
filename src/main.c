@@ -22,8 +22,9 @@
 #include "flash.h"
 #include "version.h"
 #include "haxx.h"
+//#include "bg_jpg.h"
 
-#include "jpgogc.h"
+//#include "jpgogc.h"
 
 /* [nitr8]: For use with JPEG, change it from a void pointer to an unsigned int pointer */
 /* static void *xfb = NULL; */
@@ -41,10 +42,10 @@ static int fat_init_count = 0;
 int sd_initialized = 0;
 
 /* [nitr8]: Add nice and shiny RGD logo */
-extern char bg_jpg[];
-extern int bg_jpg_size;
+//extern const uint8_t bg_jpg[];
+//extern const size_t bg_jpg_size;
 
-static void display_jpeg(JPEGIMG jpeg, int x, int y)
+/*static void display_jpeg(JPEGIMG jpeg, int x, int y)
 {
     unsigned int *jpegout = (unsigned int *)jpeg.outbuffer;
 
@@ -58,7 +59,7 @@ static void display_jpeg(JPEGIMG jpeg, int x, int y)
 
     free(jpeg.outbuffer);
 }
-
+*/
 void printHeader(){
 	printf("\x1b[2;3H");
 	printf("RGD SDBoot Installer build %s - by \x1b[32mroot1024\x1b[37m, \x1b[36mnitr8\x1b[37m, \x1b[31mRedBees\x1b[37m, \x1b[33mDeadlyFoez\x1b[37m\n   raregamingdump.ca", buildNumber);
@@ -82,11 +83,11 @@ int main(int argc, char **argv)
 	bool enableDebug = false;
 
 	/* [nitr8]: Add nice and shiny RGD logo */
-	JPEGIMG about;
+//	JPEGIMG about;
 
 /* [nitr8]: Add support for realtime debugging using a USB-Gecko */
 #ifdef _DEBUG
-	DEBUG_Init(GDBSTUB_DEVICE_USB, GDBSTUB_DEF_CHANNEL);
+	//DEBUG_Init(GDBSTUB_DEVICE_USB, GDBSTUB_DEF_CHANNEL);
 
 	/* [nitr8]: Set breakpoint here */
 	//_break();
@@ -95,19 +96,18 @@ int main(int argc, char **argv)
 	//gecko_printf("%08x\n", ipc_initialize());
 
 	/* [nitr8]: Add nice and shiny RGD logo */
-	memset(&about, 0, sizeof(JPEGIMG));
+	/*memset(&about, 0, sizeof(JPEGIMG));
 	about.inbuffer = bg_jpg;
 	about.inbufferlength = bg_jpg_size;
 	JPEG_Decompress(&about);
-
+*/
 	VIDEO_Init();
 	WPAD_Init();
 	PAD_Init();
 
 	rmode = VIDEO_GetPreferredMode(NULL);
 	xfb = MEM_K0_TO_K1(SYS_AllocateFramebuffer(rmode));
-	console_init(xfb,20,20,rmode->fbWidth,rmode->xfbHeight,rmode->fbWidth*VI_DISPLAY_PIX_SZ);
-
+	console_init(xfb,0,0,rmode->fbWidth,rmode->xfbHeight,rmode->fbWidth*VI_DISPLAY_PIX_SZ);
 	/* [nitr8]: Add nice and shiny RGD logo */
         //display_jpeg(about, 0, 344);
 
@@ -125,13 +125,16 @@ int main(int argc, char **argv)
 
 	/* [nitr8]: This should help alot when it comes to restarting things... */
 	/*	    Better than having to "hard-reset" the console by holding down POWER every time */
-	SYS_SetResetCallback(console_reset);
-	
+//	SYS_SetResetCallback(console_reset);
+
 	/* Get Bus Access (disable AHBPROT) */
 	Haxx_GetBusAccess();
 	
 	gecko_init(1);
-	
+	if (IsDolphin())
+	{
+		ThrowError(errorStrings[ErrStr_InDolphin]);
+	}
 	if (!AHBPROT_DISABLED)
 	{ 
 		ThrowError(errorStrings[ErrStr_NeedPerms]);
@@ -141,11 +144,8 @@ int main(int argc, char **argv)
 	Enable_DevFlash();
 	Restore_Trucha();
 	
-	if (IsDolphin())
-	{
-		ThrowError(errorStrings[ErrStr_InDolphin]);
-	}
-	else if (IsWiiU())
+	
+	if (IsWiiU())
 	{
 		ThrowError(errorStrings[ErrStr_InCafe]);
 	}

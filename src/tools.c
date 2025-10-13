@@ -558,7 +558,7 @@ int exit_on_error(int check_value, int check_amount, char *string, int error_cod
 }
 
 /* [nitr8]: Added - used for easier RESET when it comes to restarting the app */
-void console_reset(void)
+resetcallback console_reset(u32 irq, void* ctx)
 {
 	console_reload = 1;
 }

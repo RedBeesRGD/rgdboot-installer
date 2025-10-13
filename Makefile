@@ -57,7 +57,7 @@ endif
 
 CXXFLAGS = $(CFLAGS)
 
-LDFLAGS	= $(MACHDEP) -T$(CURDIR)/../rgdboot.ld -Wl,-Map,$(notdir $@).map
+LDFLAGS	= $(MACHDEP) -Wl,-Map,$(notdir $@).map
 
 #---------------------------------------------------------------------------------
 # any extra libraries we wish to link with the project

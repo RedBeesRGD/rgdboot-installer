@@ -11,6 +11,7 @@
 #include <gccore.h>
 #include <fat.h>
 #include <wiiuse/wpad.h>
+#include <ogc/system.h>
 
 /* [nitr8]: Added */
 #include "gecko.h"
@@ -88,7 +89,7 @@ void memstats(int reset);
 int exit_on_error(int check_value, int check_amount, char *string, int error_code);
 
 /* [nitr8]: Added - used for easier RESET when it comes to restarting the app */
-void console_reset(void);
+resetcallback console_reset(u32 irq, void* ctx);
 
 /* [nitr8]: Added - used for calculation of the ECC data in a NAND block */
 u32 swap32(u32 val);

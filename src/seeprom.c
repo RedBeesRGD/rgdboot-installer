@@ -221,13 +221,19 @@ static int clear_boot2_info_region(int offset)
 	int ret = 0;
 
 	/* Clear all array data */
+//	printf("about to memset, press a\n");
+//	WaitForPad();
 	memset(clear, 0, sizeof(clear));
 	memset(data_after, 0, sizeof(data_after));
 
 	/* Clear the desired SEEPROM boot2 info region */
+//	printf("about to seep write, press a\n");
+//	WaitForPad();
 	SEEPROMWrite(clear, offset, sizeof(clear));
 
 	/* Read back the data of the boot2 info regions */
+//	printf("about to read back, press a\n");
+//	WaitForPad();
 	SEEPROMRead(data_after, offset, sizeof(clear));
 
 	/* Check the contents... */
@@ -871,8 +877,11 @@ int SEEPROMClearVersion(void)
 #ifndef NO_VERSION_CLEAR
 
 	/* Backup the boot2 info regions to the SD-Card first!!! */
+//	printf("about to back up, press a\n");
+//	WaitForPad();
 	ret = SEEPROMBackupVersion();
-
+//	printf("about to clear, press a\n");
+//	WaitForPad();
 	/* Read or write failed for either the backup file or the SEEPROM */
 	if (ret != 0)
 		goto out;
