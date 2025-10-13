@@ -22,9 +22,9 @@
 #include "flash.h"
 #include "version.h"
 #include "haxx.h"
-//#include "bg_jpg.h"
+#include "bg_jpg.h"
 
-//#include "jpgogc.h"
+#include "jpgogc.h"
 
 /* [nitr8]: For use with JPEG, change it from a void pointer to an unsigned int pointer */
 /* static void *xfb = NULL; */
@@ -45,7 +45,7 @@ int sd_initialized = 0;
 //extern const uint8_t bg_jpg[];
 //extern const size_t bg_jpg_size;
 
-/*static void display_jpeg(JPEGIMG jpeg, int x, int y)
+static void display_jpeg(JPEGIMG jpeg, int x, int y)
 {
     unsigned int *jpegout = (unsigned int *)jpeg.outbuffer;
 
@@ -55,11 +55,11 @@ int sd_initialized = 0;
 
     for (i = 0; i <= width; i++)
         for (j = 0; j <= height - 2; j++)
-            xfb[(i + x) + 320 * (j + 16 + y)] = jpegout[i + width * j];
+            xfb[(i + x) + 320 * (j + 0 + y)] = jpegout[i + width * j];
 
     free(jpeg.outbuffer);
 }
-*/
+
 void printHeader(){
 	printf("\x1b[2;3H");
 	printf("RGD SDBoot Installer build %s - by \x1b[32mroot1024\x1b[37m, \x1b[36mnitr8\x1b[37m, \x1b[31mRedBees\x1b[37m, \x1b[33mDeadlyFoez\x1b[37m\n   raregamingdump.ca", buildNumber);
@@ -83,7 +83,7 @@ int main(int argc, char **argv)
 	bool enableDebug = false;
 
 	/* [nitr8]: Add nice and shiny RGD logo */
-//	JPEGIMG about;
+	JPEGIMG about;
 
 /* [nitr8]: Add support for realtime debugging using a USB-Gecko */
 #ifdef _DEBUG
@@ -96,20 +96,21 @@ int main(int argc, char **argv)
 	//gecko_printf("%08x\n", ipc_initialize());
 
 	/* [nitr8]: Add nice and shiny RGD logo */
-	/*memset(&about, 0, sizeof(JPEGIMG));
+	memset(&about, 0, sizeof(JPEGIMG));
 	about.inbuffer = bg_jpg;
 	about.inbufferlength = bg_jpg_size;
 	JPEG_Decompress(&about);
-*/
+
 	VIDEO_Init();
 	WPAD_Init();
 	PAD_Init();
 
 	rmode = VIDEO_GetPreferredMode(NULL);
 	xfb = MEM_K0_TO_K1(SYS_AllocateFramebuffer(rmode));
-	console_init(xfb,0,0,rmode->fbWidth,rmode->xfbHeight,rmode->fbWidth*VI_DISPLAY_PIX_SZ);
+// 40 135
+	console_init(xfb,40,120,578,330,rmode->fbWidth*VI_DISPLAY_PIX_SZ);
 	/* [nitr8]: Add nice and shiny RGD logo */
-        //display_jpeg(about, 0, 344);
+        display_jpeg(about, 0, 0);
 
 	VIDEO_Configure(rmode);
 	VIDEO_SetNextFramebuffer(xfb);
@@ -119,7 +120,6 @@ int main(int argc, char **argv)
 
 	if (rmode->viTVMode&VI_NON_INTERLACE)
 		VIDEO_WaitVSync();
-
 	/* [nitr8]: DEBUG */
 //	IOS_ReloadIOS(236);
 
@@ -133,11 +133,11 @@ int main(int argc, char **argv)
 	gecko_init(1);
 	if (IsDolphin())
 	{
-		ThrowError(errorStrings[ErrStr_InDolphin]);
+//		ThrowError(errorStrings[ErrStr_InDolphin]);
 	}
 	if (!AHBPROT_DISABLED)
 	{ 
-		ThrowError(errorStrings[ErrStr_NeedPerms]);
+//		ThrowError(errorStrings[ErrStr_NeedPerms]);
 	}
 	
 	Fix_ES_ImportBoot();
@@ -153,7 +153,7 @@ int main(int argc, char **argv)
 	/* [nitr8]: Disabled... */
 
 	if(!fatInitDefault()){
-		ThrowError(errorStrings[ErrStr_SDCard]);
+	//	ThrowError(errorStrings[ErrStr_SDCard]);
 	}
 
 	/* [nitr8]: Instead, loop until the filesystem was initialized */
@@ -181,6 +181,7 @@ int main(int argc, char **argv)
 	}
 */
 	/* [nitr8]: Instead, loop until we get a release from a locked access to /dev/flash */
+//	while(1);
 	while (NANDFlashInit() < 0)
 	{
 		dev_flash_access_count++;
@@ -222,7 +223,6 @@ int main(int argc, char **argv)
 
 	printf("Press (A) to continue, or (HOME) / (Z) to quit and return to the HBC.\n");
 
-	
 	/* [nitr8]: This should help alot when it comes to restarting things... */
 	/*	    Better than having to "hard-reset" the console by holding down POWER every time */
 	/* while(1) */
