@@ -79,7 +79,7 @@ static void PrintMenu(void)
 	// [root1024]: clear line that displays the selected function name.
 	printf("\x1b[6;0H\33[2K");
 	
-	printf("\x1b[8;0H");
+	printf("\x1b[2;0H");
 
 	/* [nitr8]: Add sub-menu support */
 	if (entered_sub_menu)
@@ -110,13 +110,13 @@ static void PrintMenu(void)
 #endif
 	}
 
-	printf("\x1b[4;0H");
+//	printf("\x1b[4;0H");
 }
 
 /* [nitr8]: Make static and moved up here */
 static void PrintCursor(void)
 {
-	u8 location = menuPosition + 8;
+	u8 location = menuPosition + 2; // 2 is the offset of rows from the top
 
 	printf("\x1b[%i;0H", location);
 	printf("%s", CURSOR);
@@ -194,7 +194,7 @@ static void DoMainMenu(void)
 	ClearScreen();
 	
 	/* [root1024]: Print selected function name on top */
-	printf("\x1b[6;0H");
+	printf("\x1b[2;0H");
 
 	if (pad_button_was_pressed)
 	{
@@ -361,11 +361,9 @@ void ClearScreen(void)
 			initial_sub_menu_cleared = 1;
 		}
 	}
-	
-	for(i=7; i<=32; i++){
-		printf("\x1b[%d;1H\x1b[2K", i);
-	}
-	printf("\x1b[7;0H");
+
+	printf("\x1b[2J");
+	printf("\x1b[2;0H");
 	
 	#if 0
 	
