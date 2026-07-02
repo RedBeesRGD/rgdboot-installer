@@ -7,7 +7,7 @@ ifeq ($(strip $(DEVKITPPC)),)
 $(error "Please set DEVKITPPC in your environment. export DEVKITPPC=<path to>devkitPPC")
 endif
 
-include $(DEVKITPPC)/wii_rules
+include $(DEVKITPRO)/libogc2/wii_rules
 
 #---------------------------------------------------------------------------------
 # TARGET is the name of the output
@@ -65,7 +65,7 @@ LDFLAGS	= $(MACHDEP) -Wl,-Map,$(notdir $@).map
 
 # [nitr8]: Add support for realtime debugging using a USB-Gecko (libdb) */
 #LIBS	:=	-lfat -lwiiuse -lbte -logc -lm
-LIBS	:=	-lfat -lwiiuse -lbte -logc -ldb -lm
+LIBS	:=	-lfat -lwiiuse -lbte -ldb -logc -lm
 
 #---------------------------------------------------------------------------------
 # list of directories containing libraries, this must be the top level containing

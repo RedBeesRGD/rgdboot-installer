@@ -109,6 +109,8 @@ int main(int argc, char **argv)
 	xfb = MEM_K0_TO_K1(SYS_AllocateFramebuffer(rmode));
 // 40 135
 	console_init(xfb,40,120,578,330,rmode->fbWidth*VI_DISPLAY_PIX_SZ);
+	CON_EnableGecko(1, true);
+	DEBUG_Init(GDBSTUB_DEVICE_USB, 1);
 	/* [nitr8]: Add nice and shiny RGD logo */
         display_jpeg(about, 0, 0);
 
@@ -153,7 +155,7 @@ int main(int argc, char **argv)
 	/* [nitr8]: Disabled... */
 
 	if(!fatInitDefault()){
-	//	ThrowError(errorStrings[ErrStr_SDCard]);
+		ThrowError(errorStrings[ErrStr_SDCard]);
 	}
 
 	/* [nitr8]: Instead, loop until the filesystem was initialized */

@@ -459,37 +459,12 @@ u8 EnterMenu(bool enableDebug)
 
 			/* [nitr8]: Reworked - Fix menu bug #1 where button press of "WPAD_BUTTON_B" matches GC "PAD_BUTTON_DOWN" */
 			case PAD_BUTTON_DOWN:
-				/* [nitr8]: This is the actual bug-fix */
-				switch (pad_button.is_gc_controller)
-				{
-					/* [nitr8]: It's a Wiimote */
-					case 0:
-						/* [nitr8]: Add sub-menu support */
-						pad_button_was_pressed = 1;
-
-						if (entered_sub_menu)
-						{
-							entered_sub_menu = 0;
-							initial_sub_menu_cleared = 0;
-							DoMainMenu();
-						}
-
-						break;
-
-					/* [nitr8]: It's a GC Controller */
-					case 1:
-						/* [nitr8]: Step down the menu */
-						Move(DOWN);
-						break;
-				}
-
-				/* [nitr8]: Added this to fix menu bug #1 where button press of "WPAD_BUTTON_B" matches GC "PAD_BUTTON_DOWN" */
+				/* [nitr8]: Step down the menu */
+				Move(DOWN);
 				break;
 
 			/* [nitr8]: Add Classic Controller button mapping */
 			case WPAD_CLASSIC_BUTTON_DOWN:
-
-			case WPAD_BUTTON_DOWN:
 				Move(DOWN);
 				break;
 
