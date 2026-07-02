@@ -5,6 +5,7 @@
    SPDX-License-Identifier: MIT */
 
 #include "haxx.h"
+#include "gecko.h"
 #include <stdio.h>
 #include <unistd.h>
 
@@ -55,7 +56,7 @@ static s32 Haxx_IOSExploit(u32 entrypoint)
     if (fd < 0)
         return fd;
 
-    printf("Exploit: Setting up MEM1\n");
+    gecko_printf("Exploit: Setting up MEM1\n");
 
     mem1 = (u32*)0x80000000;
     mem1[0] = 0x4903468D; /* ldr r1, =0x10100000; mov sp, r1; */
@@ -76,7 +77,7 @@ static s32 Haxx_IOSExploit(u32 entrypoint)
     vec[2].data = (void*)0x80000000;
     vec[2].len = 32;
 
-    printf("Exploit: Doing exploit call\n");
+    gecko_printf("Exploit: Doing exploit call\n");
 
     ret = IOS_Ioctlv(fd, 0, 1, 2, vec);
 
@@ -133,7 +134,7 @@ bool Haxx_GetBusAccess(void)
     /* Do nothing if we already have bus access */
     if (Haxx_CheckBusAccess())
     {
-        printf("Already have bus access, skipping exploit\n");
+        gecko_printf("Already have bus access, skipping exploit\n");
 
         return true;
     }
@@ -141,7 +142,7 @@ bool Haxx_GetBusAccess(void)
     /* If just the PPCKERN bit is set then we can just set the other bits */
     if (read32(HW_AHBPROT) & 0x80000000)
     {
-        printf("Already have PPCKERN, setting other bits\n");
+        gecko_printf("Already have PPCKERN, setting other bits\n");
 
         mask32(HW_AHBPROT, 0, 0x80000DFE);
         mask32(HW_MEMMIRR, 0, 0x08);
@@ -153,13 +154,13 @@ bool Haxx_GetBusAccess(void)
     Haxx_FlushRange(armCode, sizeof(armCode));
 
     ret = Haxx_IOSExploit((u32)armCode & ~0xC0000000);
-    printf("IOS exploit call result: %d\n", ret);
+    gecko_printf("IOS exploit call result: %d\n", ret);
 
     /* The exploit realistically couldn't have run if the result is less than
        zero. */
     if (ret >= 0)
     {
-        printf("Waiting for bus access...\n");
+        gecko_printf("Waiting for bus access...\n");
 
         /* XXX timeout */
         while (!Haxx_CheckBusAccess())

@@ -82,9 +82,7 @@ pad_t WaitForPad(void)
 
 		if (wpadButtons || padButtons)
 		{
-#ifdef DEBUG_CONTROLLER
 			gecko_printf("wpadButtons (pressed) = %08x / padButtons = %08x / wpadButtons (released) = %08x\n", wpadButtons, padButtons, wpad_data->btns_u);
-#endif
 			break;
 		}
 

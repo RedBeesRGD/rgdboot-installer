@@ -108,11 +108,12 @@ int main(int argc, char **argv)
 	rmode = VIDEO_GetPreferredMode(NULL);
 	xfb = MEM_K0_TO_K1(SYS_AllocateFramebuffer(rmode));
 // 40 135
-	console_init(xfb,40,120,578,330,rmode->fbWidth*VI_DISPLAY_PIX_SZ);
+//	console_init(xfb,40,120,578,330,rmode->fbWidth*VI_DISPLAY_PIX_SZ);
+	CON_InitEx(rmode, 40, 120, 578, 330);
 	CON_EnableGecko(1, true);
 	DEBUG_Init(GDBSTUB_DEVICE_USB, 1);
 	/* [nitr8]: Add nice and shiny RGD logo */
-        display_jpeg(about, 0, 0);
+//        display_jpeg(about, 0, 0);
 
 	VIDEO_Configure(rmode);
 	VIDEO_SetNextFramebuffer(xfb);
@@ -122,6 +123,10 @@ int main(int argc, char **argv)
 
 	if (rmode->viTVMode&VI_NON_INTERLACE)
 		VIDEO_WaitVSync();
+
+	display_jpeg(about, 0, 0);
+//	printf("\x1b[8;6H");
+	printf("\x1b[2;0H");
 	/* [nitr8]: DEBUG */
 //	IOS_ReloadIOS(236);
 
@@ -207,12 +212,13 @@ int main(int argc, char **argv)
 		enableDebug = (strcmp(argv[1], "debug") == 0) ? true : false;
 
 	enableDebug = true;
-	
+
+//	printf("The quick brown fox jumped over the lazy dog");	
+//	WaitForPad();
 	/* [nitr8]: At the same time - mark that as a high risk warning! */
 	/* printf("\nWARNING: PLEASE READ THIS CAREFULLY!\n\n"); */
 	printf("\x1b[31mWARNING: PLEASE READ THIS CAREFULLY!\x1b[37m\n\n");
 	printf("THIS IS BETA SOFTWARE. AS SUCH, IT CARRIES A HIGH RISK OF BRICKING THE\nCONSOLE.\n\n");
-
 	/* [nitr8]: Regarding warning: don't forget about the SEEPROM here... */
 	/* [nitr8]: At the same time - mark that as a high risk warning! */
 	/* [nitr8]: Make room for an additional intro logo by removing unnecessary line feeds */
