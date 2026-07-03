@@ -83,7 +83,7 @@ int main(int argc, char **argv)
 	bool enableDebug = false;
 
 	/* [nitr8]: Add nice and shiny RGD logo */
-	JPEGIMG about;
+//	JPEGIMG about;
 
 /* [nitr8]: Add support for realtime debugging using a USB-Gecko */
 #ifdef _DEBUG
@@ -96,10 +96,10 @@ int main(int argc, char **argv)
 	//gecko_printf("%08x\n", ipc_initialize());
 
 	/* [nitr8]: Add nice and shiny RGD logo */
-	memset(&about, 0, sizeof(JPEGIMG));
-	about.inbuffer = bg_jpg;
-	about.inbufferlength = bg_jpg_size;
-	JPEG_Decompress(&about);
+//	memset(&about, 0, sizeof(JPEGIMG));
+//	about.inbuffer = bg_jpg;
+//	about.inbufferlength = bg_jpg_size;
+//	JPEG_Decompress(&about);
 
 	VIDEO_Init();
 	WPAD_Init();
@@ -108,13 +108,15 @@ int main(int argc, char **argv)
 	rmode = VIDEO_GetPreferredMode(NULL);
 	xfb = MEM_K0_TO_K1(SYS_AllocateFramebuffer(rmode));
 // 40 135
-//	console_init(xfb,40,120,578,330,rmode->fbWidth*VI_DISPLAY_PIX_SZ);
-	CON_InitEx(rmode, 40, 120, 578, 330);
+	console_init(xfb,20,20,rmode->fbWidth,rmode->xfbHeight,rmode->fbWidth*VI_DISPLAY_PIX_SZ);
+//	CON_InitEx(rmode, 31, 116, 578, 330);
 	CON_EnableGecko(1, true);
-	DEBUG_Init(GDBSTUB_DEVICE_USB, 1);
+//	DEBUG_Init(GDBSTUB_DEVICE_USB, 1);
 	/* [nitr8]: Add nice and shiny RGD logo */
 //        display_jpeg(about, 0, 0);
-
+//	gecko_init(1);
+//	gecko_printf("hi gecko!\n");
+//	ClearScreen();
 	VIDEO_Configure(rmode);
 	VIDEO_SetNextFramebuffer(xfb);
 	VIDEO_SetBlack(FALSE);
@@ -124,7 +126,7 @@ int main(int argc, char **argv)
 	if (rmode->viTVMode&VI_NON_INTERLACE)
 		VIDEO_WaitVSync();
 
-	display_jpeg(about, 0, 0);
+//	display_jpeg(about, 0, 0);
 //	printf("\x1b[8;6H");
 	printf("\x1b[2;0H");
 	/* [nitr8]: DEBUG */
@@ -137,7 +139,6 @@ int main(int argc, char **argv)
 	/* Get Bus Access (disable AHBPROT) */
 	Haxx_GetBusAccess();
 	
-	gecko_init(1);
 	if (IsDolphin())
 	{
 //		ThrowError(errorStrings[ErrStr_InDolphin]);
